@@ -7,9 +7,12 @@
 
 # test
 /python/test
+/python/doc/blog_need_API.md
+/python/doc/requirements_document.md
 
 # Database migrations
 /python/migrations
+/python/blogs
 
 # pycharm
 /python/.idea
