@@ -1,0 +1,23 @@
+<%if(page_count>1){%>
+	<nav>
+	  <ul class="pagination">
+	    <li>
+	      <a href="post.html?<%=url%>&page=<%=page!=1?(parseInt(page)-1):page;%>" aria-label="Previous">
+	        <span aria-hidden="true">&laquo;</span>
+	      </a>
+	    </li>
+	    <%for(var i=1;i<=page_count;i++){%>
+		    <%if(i==page){%>
+		    	<li class="active"><a href="post.html?<%=url%>&page=<%=i%>"><%=i%></a></li>
+		    <% } else { %>
+		    	<li><a href="post.html?<%=url%>&page=<%=i%>"><%=i%></a></li>
+		    <% } %>
+	    <% } %>
+	    <li>
+	      <a href="post.html?<%=url%>&page=<%=page_count!=page?(parseInt(page)+1):page;%>" aria-label="Next">
+	        <span aria-hidden="true">&raquo;</span>
+	      </a>
+	    </li>
+	  </ul>
+	</nav>
+<% } %>

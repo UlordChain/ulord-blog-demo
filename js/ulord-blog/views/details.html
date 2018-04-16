@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel panel-warning">
+                <div class="panel-heading blog-title">
+                    <h3>Ulord博客</h3>
+                    <a class="pull-right" href="/info">个人中心</a>
+                    <a class="pull-right" href="/home">返回主页</a>
+                    <a class="pull-right" href="/release">发布</a>
+                </div>
+                <div class="panel-body">
+                    <h3 class="title"></h1>
+                    <!-- <div class="item-tips-wrap">
+                        <span class="item-tag">技术</span>
+                        <span class="item-tag">Ulord</span>
+                    </div> -->
+                    <p style="word-break: break-word;" class="content"></p>
+                    <p>作者：<span class="author"></span></p>
+                </div>
+            </div>
+    </div>
+    <script>
+        var title = window.sessionStorage.getItem("title");
+        var author = window.sessionStorage.getItem("author")
+        var content = window.sessionStorage.getItem("content");
+        console.log(content);
+        $('.content').html(content);
+        $('.author').html(author);
+        $('.title').html(title);
+    </script>
+</body>
+
+</html>
