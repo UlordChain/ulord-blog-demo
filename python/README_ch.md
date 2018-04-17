@@ -1,4 +1,4 @@
-﻿# 优知[英文版](http://192.168.14.240:3000/caolinan/blog_daemon/src/master/README.md)
+﻿# 优知[英文版](https://github.com/UlordChain/ulord-blog-demo/tree/master/python)
 
 一个轻量级的博客，将文章上传至ulord平台并进行定价，其他用户付费查看。所有交易信息均可通过ulord区块浏览器查阅
 
@@ -60,10 +60,11 @@ python server.py
 ```
 ## 计划清单
 - [x] 添加计划清单
-- [ ] 添加登录登出
-- [ ] 添加配置文件
+- [x] 添加登录
+- [ ] 添加登出
+- [x] 添加配置文件
 - [ ] 添加加密
-- [ ] 添加上传
-- [ ] 适配linux环境
+- [x] 添加上传
+- [x] 适配linux环境
 - [ ] 添加单元测试
 - [ ] docker 环境
