@@ -86,17 +86,20 @@
                 })
             }).done(function(res) {
                 if(res.code == 1){
+                    layer.close(index);
                     layer.msg('发布成功',{time: 500}, function() {
                     window.location.href = '/home';
-                    
                 })
                 } else if (res.code == -2){
+                    layer.close(index);
                     layer.msg('发布失败，余额不足！',{time: 1000})
                 } else {
+                    layer.close(index);
                     layer.msg('发布失败',{time: 1000})
                 }
                 
             })
+            var index = layer.load(0, {shade: false});
         })
        
         

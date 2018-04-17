@@ -5,16 +5,23 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var ejs = require('ejs');
 var session = require('express-session')
+var bodyParser = require('body-parser');
+
+
+//引入路由文件
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
-var bodyParser = require('body-parser');
+
+//设置 application/json 大小限制
 app.use(bodyParser.json({limit: '50mb'}));
+
+//设置 application/x-www-form-urlencoded 大小限制
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'ejs');
 app.engine('html',ejs.__express);
 app.set('view engine', 'html');
 
@@ -24,13 +31,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
+
+//设置session和cookie
 app.use(session({
   secret: '12345',
-  name: 'testapp',
+  name: 'token1',
   cookie: {maxAge: 60000},
   resave: false,
   saveUninitialized: true,
 }))
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

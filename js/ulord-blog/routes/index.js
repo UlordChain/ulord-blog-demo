@@ -4,15 +4,9 @@ var bodyParser = require('body-parser');
 var router = express.Router();
 var URL = require('url'); 
 
-var token = '';
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  
-  if(req.session.user) {
-    res.redirect('/home');
-  } else {
-    res.redirect('/login');
-  }
+  res.redirect('/login');
 });
 
 router.get('/login', function (req, res, next) {
@@ -39,13 +33,17 @@ router.post('/login', function (req, res) {
   request(options, function (error, response, data) {
     console.log(data)
     if(data.result == '1'){
-      req.session.user = data;
-      token = data.msg;
+      // req.session.user = data;   
+      res.cookie('token',data.msg, { expires: new Date(Date.now() + 900000), httpOnly: true });
      
       res.render('login', {
         code: '1'
       })
       console.log(data);
+    } else if (data.msg == 'error password') {
+      res.render('login', {
+        code: '-2'
+      })
     } else {
       res.render('login', {
         code: '-1'
@@ -84,13 +82,21 @@ router.post('/register', function (req, res) {
   request(options, function (error, response, data) {
     console.log(data, error);
     if(data.result == '1'){
-      token = data.msg;
+      res.cookie('token',data.msg, { expires: new Date(Date.now() + 900000), httpOnly: true });
       res.render('register', {
         code: '1'
       })
     } else if (data.msg == 'existing user') {
       res.render('register', {
         code: '-2'
+      })
+    } else if (data.msg == 'error cellphone') {
+      res.render('register', {
+        code: '-3'
+      })
+    } else if (data.msg == 'error email') {
+      res.render('register', {
+        code: '-4'
       })
     } else {
       res.render('register', {
@@ -118,7 +124,7 @@ router.get('/home', function (req, res, next) {
     json: true,
     headers: {
       "content-type": "application/json",
-      "token": token
+      "token": req.cookies.token
     },
     body: {page: page}
   }
@@ -126,7 +132,7 @@ router.get('/home', function (req, res, next) {
   request(options, function (error, response, data) {
     console.log(data);
     if(data.result == '1'){
-      console.log(data);
+      console.log(data.msg, data.result);
       if(url){
         url = url.replace(/\&page=[0-9]+/g, '');
       }
@@ -159,7 +165,7 @@ router.post('/home', urlencodedParser,  function (req, res, next) {
   request(options, function (error, response, data) {
     if(data.result == '1'){
       res.render('data', data);
-      console.log(data);
+      console.log(data.msg, data.result);
     } else {
       console.log(error);
       console.log(data);
@@ -178,7 +184,7 @@ router.post('/release', urlencodedParser, function(req, res, next) {
     json: true,
     headers: {
       "content-type": "application/json",
-      "token": token
+      "token": req.cookies.token
     },
     body: {
       title: req.body.title,
@@ -212,7 +218,7 @@ router.post('/pay', urlencodedParser, function(req, res, next) {
     json: true,
     headers: {
       "content-type": "application/json",
-      "token": token
+      "token": req.cookies.token
     },
     body: {
       password: req.body.password,
@@ -234,6 +240,10 @@ router.post('/pay', urlencodedParser, function(req, res, next) {
     } else if (data.msg == 'Insufficient amount') {
       res.json({
         code: -2
+      })
+    } else if (data.msg == 'error password') {
+      res.json({
+        code: -3
       })
     } 
   })
@@ -259,7 +269,7 @@ router.get('/info', function (req, res, neex) {
     method: 'GET',
     json: true,
     headers: {
-      "token": token
+      "token": req.cookies.token
     },
   }
   console.log('个人信息请求开始');
