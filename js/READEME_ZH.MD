@@ -8,7 +8,7 @@
 
 运行环境:
 ------
-在Windows环境下的node.js > v8.0版本,express > v4.13.1版本运行正常。</br>
+在Windows环境下的node.js v8版本,express v4.13.1版本运行正常。</br>
 
 安装
 ------
