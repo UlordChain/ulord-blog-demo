@@ -8,7 +8,7 @@
 
 运行环境:
 ------
-在Windows下的node>8.0版本,express4.13.1版本运行正常。</br>
+在Windows下的node>v8.0版本,express v4.13.1版本运行正常。</br>
 
 安装
 ------
@@ -27,7 +27,7 @@
 #### 基于CDN的IPFS API提供IpfsApi构造函数作为全局window对象的一种方法。例：
     var ipfs = window.IpfsApi('localhost', '5001')
 
-#### 查看是否搭建成功
+#### 本地测试是否搭建成功
     ipfs.id()
     .then((id) => {
       console.log('my id is: ', id)
