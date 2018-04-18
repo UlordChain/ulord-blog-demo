@@ -1,14 +1,14 @@
 项目简介
 ------
-一个基于nodejs中间层、express框架及paython后台搭建的ulord博客demo</br>
+一个基于nodejs中间层、express框架及paython后台搭建的ulord博客demo。</br>
 
 效果实现
 ------
-主体分为前台包括用户注册登录面板，文章内容列表以及分页；内容详情页有文章内容展示，文章支付查看，文章的发布页等</br>
+主体分为前台包括用户注册登录面板，文章内容列表以及分页；内容详情页有文章内容展示，文章支付查看，文章的发布页等。</br>
 
 运行环境:
 ------
-在Windows下的node>8.0版本,express4.13.1版本运行正常</br>
+在Windows下的node>8.0版本,express4.13.1版本运行正常。</br>
 
 安装
 ------
@@ -19,7 +19,7 @@
 
 注意事项 
 ------
-分布式存储引入需引用ipfs技术，ipfs文档移步[https://github.com/ipfs/js-ipfs-api](https://github.com/ipfs/js-ipfs-api)</br>
+分布式存储引入需引用ipfs技术，ipfs文档移步[https://github.com/ipfs/js-ipfs-api](https://github.com/ipfs/js-ipfs-api)。</br>
 
 #### 引入CDN
     < script  src = “ https://unpkg.com/ipfs-api/dist/index.js ” > </ script >
