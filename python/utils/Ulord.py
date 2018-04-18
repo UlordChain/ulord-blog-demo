@@ -222,7 +222,7 @@ class UlordHelper(object):
 
     def queryblog(self, page=1, num=10):
         # query the blog list from the ulord platform.method is get
-        temp_url = self.ulord_queryblog + "{0}/{1}".format(page, num)
+        temp_url = self.ulord_queryblog + "{0}/{1}/".format(page, num)
         return self.put(temp_url)
 
     def querybalance(self, payer, pay_password):
@@ -233,11 +233,11 @@ class UlordHelper(object):
         }
         return self.post(self.ulord_querybalance, data)
 
-    def checkisbought(self, payer, claim_id):
+    def checkisbought(self, payer, claim_ids):
         # query the personal balance from the ulord platform
         data = {
             'username': payer,
-            'claim_id': claim_id
+            'claim_ids': claim_ids
         }
         return self.post(self.ulord_checkbought, data)
 
@@ -246,15 +246,15 @@ class UlordHelper(object):
         data = {
             'author': wallet_username,
         }
-        temp_url = self.ulord_userpublished + "{0}/{1}".format(page, num)
-        return self.put(temp_url)
+        temp_url = self.ulord_userpublished + "{0}/{1}/".format(page, num)
+        return self.post(temp_url, data)
 
     def queryuserbought(self, wallet_username, page=1, num=10):
         # query user published from ulort platform
         data = {
             'customer': wallet_username,
         }
-        temp_url = self.ulord_userbought + "{0}/{1}".format(page, num)
+        temp_url = self.ulord_userbought + "{0}/{1}/".format(page, num)
         return self.post(temp_url, data)
 
 

@@ -45,27 +45,27 @@ def regist():
     if username is None or password is None:
         # missing arguments
         return jsonify({
-            'result': 0,
-            'msg': "missing arguments"
+            'errcode': 60100,
+            'reason': "缺少参数"
         })
     if User.query.filter_by(username=username).first() is not None and User.query.filter_by(wallet=username).first() is not None:
         # existing user
         return jsonify({
-            'result':0,
-            'msg':"existing user"
+            'errcode':60000,
+            'reason':"用户已存在"
         })
     # check cellphone and email
     if cellphone:
         if not checker.isCellphone(cellphone):
             return jsonify({
-                'result': 0,
-                'msg': 'error cellphone'
+                'errcode': 60106,
+                'reason': '无效的手机号'
             })
     if email:
         if not checker.isMail(email):
             return jsonify({
-                'result': 0,
-                'msg': 'error email'
+                'errcode': 60105,
+                'reason': '无效的邮箱'
             })
     # user get wallet and password (or not) from ulord platform
     user = User(username=username)
@@ -108,21 +108,21 @@ def login():
     if username is None or password is None:
         # missing arguments
         return jsonify({
-            'result': 0,
-            'msg': "missing arguments"
+            'errcode': 60100,
+            'reason': "缺少参数"
         })
     login_user = User.query.filter_by(username=username).first()
     if not login_user:
         # no user
         return jsonify({
-            'result':0,
-            'msg': "error user"
+            'errcode': 60002,
+            'reason': "用户不存在"
         })
     if not login_user.verify_password(password):
         # error password
         return jsonify({
-            'result': 0,
-            'msg': "error password"
+            'errcode': 60003,
+            'reason': "密码错误"
         })
     token = str(uuid1())
     login_user.token = token
@@ -207,14 +207,14 @@ def check_bought():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    claim_id = request.json.get('claim_id')
-    if claim_id is None:
+    claim_ids = request.json.get('claim_ids')
+    if claim_ids is None:
         return jsonify({
             'errcode': 60100,
             'reason': '缺少参数'
         })
     # check if has bought
-    return jsonify(ulord_helper.checkisbought(current_user.wallet, claim_id))
+    return jsonify(ulord_helper.checkisbought(current_user.wallet, claim_ids))
 
 
 @app.route('/pay',methods=['POST'])
@@ -225,28 +225,16 @@ def pay():
     password = request.json.get('password')
     claim_id = request.json.get('claim_id')
     if password is None or claim_id is None:
-        result = 0
-        msg = "missing arguments"
         return jsonify({
-            'result':result,
-            'msg':msg
+            'errcode':60100,
+            'reason':"缺少参数"
         })
     if not current_user.verify_password(password):
         return jsonify({
-            'result': 0,
-            'msg': 'error password'
+            'errcode': 60003,
+            'reason': '密码错误'
         })
-    msg = ulord_helper.transaction(current_user.wallet, claim_id, current_user.pay_password)
-    if msg:
-        return jsonify({
-            'result': 1,
-            'msg': msg
-        })
-    else:
-        return jsonify({
-            'result': 0,
-            'msg': "pay failed!"
-        })
+    return jsonify(ulord_helper.transaction(current_user.wallet, claim_id, current_user.pay_password))
 
 
 @app.route('/user/info',methods=['GET'])
@@ -254,14 +242,14 @@ def get_userinfo():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    msg = {
-    	"username": current_user.username,
-    	"cellphone": current_user.cellphone,
-    	"Email": current_user.email
-    }
     return jsonify({
-        'result':1,
-        'msg':msg
+        'errcode':0,
+        'reason':'success',
+        'result':{
+    	    "username": current_user.username,
+            "cellphone": current_user.cellphone,
+            "Email": current_user.email
+            }
     })
 
 
@@ -278,22 +266,38 @@ def get_userpublished():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    page = request.json().get('page')
-    num = request.json().get('num')
+    try:
+        page = request.json.get('page')
+        num = request.json.get('num')
+    except:
+        page = 1
+        num = 10
+    if not page:
+        page = 1
+    if not num:
+        num = 10
     return jsonify(ulord_helper.queryuserpublished(current_user.wallet, page, num))
 
 
-@app.route('/user/info',methods=['POST'])
+@app.route('/user/bought',methods=['POST'])
 def get_userbought():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    page = request.json().get('page')
-    num = request.json().get('num')
+    try:
+        page = request.json.get('page')
+        num = request.json.get('num')
+    except:
+        page = 1
+        num = 10
+    if not page:
+        page = 1
+    if not num:
+        num = 10
     return jsonify(ulord_helper.queryuserbought(current_user.wallet, page, num))
 
 
-@app.route('/user/modify',methods=['GET'])
+@app.route('/user/modify',methods=['POST'])
 def modify_userinfo():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
@@ -326,7 +330,7 @@ def modify_userinfo():
         if (User.query.filter_by(username=username).first() is not None) & (User.query.filter_by(wallet=username).first() is not None):
             # existing user
             return jsonify({
-                'errcode': 60107,
+                'errcode': 60000,
                 'reason': "账户已存在"
             })
         current_user.username = username
