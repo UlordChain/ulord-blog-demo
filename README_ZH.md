@@ -14,10 +14,10 @@
 ### 2. 源码说明：
 #### 2.1 js文件夹部分
 > * 一个基于nodejs中间层、express框架及paython后台搭建的ulord开放平台开发的博客系统demo。<br>
-> * 详细介绍请查看[readme](https://github.com/UlordChain/ulord-blog-demo/blob/master/js/READEME_ZH.MD)
+> * [详细介绍](https://github.com/UlordChain/ulord-blog-demo/blob/master/js/READEME_ZH.MD)
 #### 2.2 python文件夹部分
 > * 一个轻量级的博客，将文章上传至ulord平台并进行定价，其他用户付费查看。所有交易信息均可通过ulord区块浏览器查阅。<br>
-> * 详细介绍请查看[readme](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README_ch.mdD)
+> * [详细介绍](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README_ch.mdD)
 
 ### <案例1>
 #### Ulord博客应用
