@@ -8,7 +8,7 @@
 
 运行环境:
 ------
-在Windows下的node>v8.0版本,express v4.13.1版本运行正常。</br>
+在Windows环境下的node.js > v8.0版本,express > v4.13.1版本运行正常。</br>
 
 安装
 ------
@@ -24,8 +24,10 @@
 #### 引入CDN
     <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
     
-#### 基于CDN的IPFS API提供IpfsApi构造函数作为全局window对象的一种方法。例：
-    var ipfs = window.IpfsApi('localhost', '5001')
+#### 基于CDN的IPFS API提供IpfsApi构造函数作为全局window对象的一种方法。如下：
+    var ipfs = window.IpfsApi('localhost', '5001')   //本地搭建服务器
+
+    var ipfs = window.IpfsApi('114.67.37.2', '20418')   //外部搭建服务器
 
 #### 本地测试是否搭建成功
     ipfs.id()
@@ -36,7 +38,7 @@
       console.log('Fail: ', err)
     })
    
-#### 调用ipfs接口
+#### 调用ipfs-api接口
     ipfs.files.get(data,function (err,files) {
       if (err || typeof files == "undefined") {
         console.log(err);
