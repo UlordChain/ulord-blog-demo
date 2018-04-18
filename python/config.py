@@ -26,9 +26,24 @@ class BaseConfig(object):
         self.ulord_regist = "/transactions/createwallet/"
         self.ulord_transaction = "/transactions/consume/"
         self.ulord_paytouser = "/transactions/paytouser/"
+        self.ulord_queryblog = "/content/list/"
+        self.ulord_querybalance = "/transactions/balance/"
+        self.ulord_checkbought = "/transactions/check/"
+        self.ulord_userpublished = "/content/published/"
+        self.ulord_userbought = "/content/bought/"
+        # {
+        #     'username':用户名,
+        #     'claim_id':博客ID
+        # }
+        # return :
+        # {
+        #     "errcode":0/other,
+        #     "reason":"success/资源不存在"
+        # }
+
+        # TODO ulord other URL
         self.password = "123"
         self.username = "shuxudong"
-        # TODO ulord other URL
 
         # activity
         self.activity = True

@@ -40,7 +40,6 @@ def auth_login_required():
 
 @app.route('/user/regist',methods=['POST'])
 def regist():
-
     username = request.json.get('username')
     password = request.json.get('password')
     cellphone = request.json.get('cellphone')
@@ -72,7 +71,7 @@ def regist():
             })
     # user get wallet and password (or not) from ulord platform
     user = User(username=username)
-    if ulord_helper.regist(username, password) & ulord_helper.credit(username):
+    if ulord_helper.regist(username, password) & ulord_helper.paytouser(username):
         user.hash_password(password)
         if cellphone:
             user.cellphone = cellphone
@@ -81,7 +80,7 @@ def regist():
         if baseconfig.activity:
             user.balance = baseconfig.amount
         user.wallet = username
-        user.pay_password = password
+        user.pay_password = user.password_hash
     else:
         return jsonify({
             'result': 0,
@@ -221,93 +220,59 @@ def blog_list():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    try:
-        page = request.json.get('page')
-    except:
-        page = 1
-    if not page:
-        page = 1
-    blogs_list_paginate = Blog.query.paginate(int(page), 10, False)
-    blogs_list = blogs_list_paginate.items
-    # msg = {
-    #     "list": [{
-    #         "username": "test1",
-    #         "timestamp": "1523276094",
-    #         "tag ": ["tag1", "tag2"],
-    #         "description": "this is a test",
-    #         "language": "en",
-    #         "title": "test",
-    #         "amount": "0",
-    #         "currency": "ULD",
-    #         "content_type": "txt"
-    #     }
-    #     ],
-    #     "total": 1}
-    msg = {
-        'list':[],
-        'total':0
-    }
-    for blog in blogs_list:
-        tag_list = []
-        for tag in blog.tags:
-            tag_list.append(tag.tagname)
-        # TODO union query
-        user = User.query.filter_by(id=blog.userid).first()
-        if current_user.id == blog.userid:
-            file_hash = blog.body
-        elif Billing.query.filter_by(payer=current_user.id, titleid=blog.id).first():
-            file_hash = blog.body
-        else:
-            file_hash = None
-        blog_list = {
-            "id": blog.id,
-            "username": user.username,
-            "timestamp": blog.date,
-            "tag": tag_list,
-            "description": blog.description,
-            "language": "en",
-            "title": blog.title,
-            "amount": blog.amount,
-            "hash": file_hash
-            # "currency": "ULD",
-            # "content_type": "txt"
-        }
-        msg['list'].append(blog_list)
-    msg.update({
-        'total':blogs_list_paginate.total,
-        'pages': blogs_list_paginate.pages,
-        'page': blogs_list_paginate.page
-    })
+    result = ulord_helper.queryblog(1)
+    msg = result.get('result')
     return jsonify({
         'result': 1,
         'msg':msg
     })
 
 
-@app.route('/blog/record',methods=['POST'])
-def blog_record():
+# @app.route('/blog/record',methods=['POST'])
+# def blog_record():
+#     current_user = auth_login_required()  # check token
+#     if type(current_user) is dict:
+#         return jsonify(current_user)
+#     try:
+#         blog_ID = request.json.get('blog_ID')
+#     except:
+#         return jsonify({
+#             "result": 0,
+#             "msg": "need blog id"
+#         })
+#     if not blog_ID:
+#         return jsonify({
+#             "result": 0,
+#             "msg": "need blog id"
+#         })
+#     current_blog = Blog.query.filter_by(id=blog_ID).first()
+#     if not current_blog.views:
+#         current_blog.views = 0
+#     current_blog.views += 1
+#     return jsonify({
+#         'result': 1,
+#         'msg':'None'
+#     })
+
+
+@app.route('/blog/isbought',methods=['POST'])
+def check_bought():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    try:
-        blog_ID = request.json.get('blog_ID')
-    except:
+    claim_id = request.json.get('claim_id')
+    if claim_id is None:
+        result = 0
+        msg = "missing arguments"
         return jsonify({
-            "result": 0,
-            "msg": "need blog id"
+            'result':result,
+            'msg':msg
         })
-    if not blog_ID:
-        return jsonify({
-            "result": 0,
-            "msg": "need blog id"
-        })
-    current_blog = Blog.query.filter_by(id=blog_ID).first()
-    if not current_blog.views:
-        current_blog.views = 0
-    current_blog.views += 1
+    # check if has bought
+    result = ulord_helper.checkisbought(current_user.wallet, claim_id)
     return jsonify({
         'result': 1,
-        'msg':'None'
+        'msg': result
     })
 
 
@@ -372,51 +337,28 @@ def get_userinfo():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    # publish_blogs = []
-    publish_blogs = []
-    publish_temp_blogs = Blog.query.filter_by(userid=current_user.id).all()
-    for publish_temp_blog in publish_temp_blogs:
-        tags = []
-        for tag in publish_temp_blog.tags:
-            tags.append(tag.tagname)
-        blog = {
-            "id": publish_temp_blog.id,
-            "title": publish_temp_blog.title,
-            "timestamp": publish_temp_blog.date,
-            "body": publish_temp_blog.body,
-            "amount": publish_temp_blog.amount,
-            "description": publish_temp_blog.description,
-            "views": publish_temp_blog.views,
-            "tag": tags
-        }
-        publish_blogs.append(blog)
-    #   [
-    #     "blog1_title": {},
-    #     "blog2_title": {}
-    #   ]
-    # read_blogs = []
-    read_blogs = []
-    for read_temp_blog in current_user.reads:
-        tags = []
-        for tag in read_temp_blog.tags:
-            tags.append(tag.tagname)
-        blog = {
-            "id": read_temp_blog.id,
-            "title": read_temp_blog.title,
-            "timestamp": read_temp_blog.date,
-            "body": read_temp_blog.body,
-            "amount": read_temp_blog.amount,
-            "description": read_temp_blog.description,
-            "views": read_temp_blog.views,
-            "tag": tags
-        }
-        read_blogs.append(blog)
-    #   [
-    #     "blog1_title": {},
-    #     "blog2_title": {}
-    #   ]
-    # billing_details = []
+    msg = {
+    	"username": current_user.username,
+    	"cellphone": current_user.cellphone,
+    	"Email": current_user.email
+    }
+    return jsonify({
+        'result':1,
+        'msg':msg
+    })
+
+
+@app.route('/user/balance',methods=['GET'])
+def get_userbalance():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
     billing_details = []
+    #   [
+    #     "billing1_id": {},
+    #     "billing2_id": {}
+    #   ]
+    # TODO query payee is user
     billing_temp_details = Billing.query.filter_by(payer=current_user.id).all()
     for billing_temp_detail in billing_temp_details:
         payee = User.query.filter_by(id=billing_temp_detail.payee).first()
@@ -428,20 +370,43 @@ def get_userinfo():
             "title": blog.title
         }
         billing_details.append(blog)
-
-    #   [
-    #     "billing1_id": {},
-    #     "billing2_id": {}
-    #   ]
+    balance = ulord_helper.querybalance(current_user.wallet, current_user.pay_password)
     msg = {
     	"username": current_user.username,
     	"cellphone": current_user.cellphone,
     	"Email": current_user.email,
-    	"balance": current_user.balance,
-    	"publish_blogs": publish_blogs,
-    	"read_blogs": read_blogs,
-    	"billing_details": billing_details
+    	"balance": balance
     }
+    return jsonify({
+        'result':1,
+        'msg':msg
+    })
+
+
+@app.route('/user/published',methods=['POST'])
+def get_userpublished():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    page = request.json().get('page')
+    num = request.json().get('num')
+    msg = ulord_helper.ulord_userpublished(current_user.wallet)
+
+    return jsonify({
+        'result':1,
+        'msg':msg
+    })
+
+
+@app.route('/user/info',methods=['POST'])
+def get_userbought():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    page = request.json().get('page')
+    num = request.json().get('num')
+    msg = ulord_helper.ulord_userbought(current_user.wallet)
+
     return jsonify({
         'result':1,
         'msg':msg
@@ -501,7 +466,6 @@ def modify_userinfo():
             'result': 0,
             'msg': "Fail, try again."
         })
-
 
 
 @app.route('/blog/modify',methods=['POST'])
