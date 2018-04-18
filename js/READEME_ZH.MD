@@ -30,7 +30,7 @@
       console.log('Fail: ', err)
     })
    
-#### 查看是否搭建成功
+#### 调用ipfs接口
     ipfs.files.get(data,function (err,files) {
       if (err || typeof files == "undefined") {
         console.log(err);
