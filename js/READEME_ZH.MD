@@ -22,7 +22,7 @@
 分布式存储引入需引用ipfs技术，ipfs文档移步[https://github.com/ipfs/js-ipfs-api](https://github.com/ipfs/js-ipfs-api)。</br>
 
 #### 引入CDN
-    < script  src = “ https://unpkg.com/ipfs-api/dist/index.js ” > </ script >
+    <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
     
 #### 基于CDN的IPFS API提供IpfsApi构造函数作为全局window对象的一种方法。例：
     var ipfs = window.IpfsApi('localhost', '5001')
