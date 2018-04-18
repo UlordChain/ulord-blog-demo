@@ -1,4 +1,4 @@
-# Good Knowledge[中文](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README_ch.md)
+# Ulord[中文](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README_ch.md)
 
 Use ulord platform to create a single blog.
 
