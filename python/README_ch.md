@@ -1,4 +1,4 @@
-﻿# 优知[英文版](https://github.com/UlordChain/ulord-blog-demo/tree/master/python)
+﻿# 优得[英文版](https://github.com/UlordChain/ulord-blog-demo/tree/master/python)
 
 一个轻量级的博客，将文章上传至ulord平台并进行定价，其他用户付费查看。所有交易信息均可通过ulord区块浏览器查阅
 
