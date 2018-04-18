@@ -8,11 +8,11 @@
 
 运行环境:
 ------
-在Windows10下的node 8.9.3版本,express4.13.1版本运行正常</br>
+在Windows下的node>8.0版本,express4.13.1版本运行正常</br>
 
 安装
 ------
-    git clone [git@github.com:UlordChain/ulord-blog-demo.git](git@github.com:UlordChain/ulord-blog-demo.git)
+    git clone git@github.com:UlordChain/ulord-blog-demo.git
     cd /js/ulord-blog  
     npm install  
     npm start
