@@ -2,8 +2,6 @@
 *.db
 *.sqlite
 
-# company
-*.txt
 
 # test
 /python/test

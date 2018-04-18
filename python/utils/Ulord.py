@@ -157,34 +157,44 @@ class UlordHelper(object):
         self.ulord_userpublished = baseconfig.ulord_url + baseconfig.ulord_userpublished # query the blog that user has published
         # TODO ulord other URL
 
+    def post(self, url, data):
+        print(url)
+        print(data)
+        r = requests.post(url=url, json=data, headers=self.ulord_head)
+        print(r.status_code)
+        if r.status_code == requests.codes.ok:
+            print(r.json())
+            return r.json()
+        else:
+            return {
+                "errcode": 50000,
+                "reason": "调用API网络错误"
+            }
+
+    def put(self, url):
+        r = requests.get(url=url, headers=self.ulord_head)
+        print(url)
+        print(r.status_code)
+        if (r.status_code == requests.codes.ok):
+            print(r.json())
+            return r.json()
+        else:
+            return {
+                "errcode": 50000,
+                "reason": "调用API网络错误"
+            }
+
     def regist(self, username, password):
         # regist wallet address from the ulord platform
         data = {
             "username": username,
             "pay_password": password
         }
-        print(data)
-        r = requests.post(url=self.ulord_regist,json=data, headers=self.ulord_head)
-        print(r.status_code)
-        print(r.json())
-        print(r.json().get("reason"))
-        if (r.status_code == requests.codes.ok) & (r.json().get("errcode") == 0):
-            return True
-        else:
-            return False
-        # return "test_wallet_address"
+        return self.post(self.ulord_regist, data)
 
     def publish(self, data):
         # publish data to the ulord platform
-        print(data)
-        r = requests.post(url=self.ulord_publish, json=data, headers=self.ulord_head)
-        print(r.status_code)
-        print(r.json())
-        print(r.json().get("reason"))
-        if (r.status_code == requests.codes.ok) & (r.json().get("errcode") == 0):
-            return r.json().get('result').get('claim_id')
-        else:
-            return False
+        return self.post(self.ulord_publish, data)
 
     def transaction(self, payer, claim_id, pay_password):
         # record the transaction to the ulord platform
@@ -193,16 +203,7 @@ class UlordHelper(object):
             'claim_id': claim_id,
             'pay_password':pay_password
         }
-        print(self.ulord_transaction)
-        print(data)
-        r = requests.post(url=self.ulord_transaction, json=data, headers=self.ulord_head)
-        print(r.status_code)
-        print(r.json())
-        print(r.json().get("reason"))
-        if (r.status_code == requests.codes.ok) & (r.json().get("errcode") == 0):
-            return True
-        else:
-            return False
+        return self.post(self.ulord_transaction, data)
 
     def paytouser(self, username):
         # activity send some ulords to the user
@@ -212,27 +213,17 @@ class UlordHelper(object):
                 'recv_user': username,
                 'amount': baseconfig.amount
             }
-            print(data)
-            r = requests.post(url=self.ulord_paytouser, json=data, headers=self.ulord_head)
-            print(r.status_code)
-            print(r.json())
-            print(r.json().get("reason"))
-            if (r.status_code == requests.codes.ok) & (r.json().get("errcode") == 0):
-                return True
-            else:
-                return False
+            return self.post(self.ulord_paytouser, data)
         else:
-            return True
+            return {
+                "errcode": 51000,
+                "reason": "活动取消"
+            }
 
     def queryblog(self, page=1, num=10):
         # query the blog list from the ulord platform.method is get
         temp_url = self.ulord_queryblog + "{0}/{1}".format(page, num)
-        r = requests.get(url=temp_url, headers=self.ulord_head)
-        print(r.status_code)
-        if (r.status_code == requests.codes.ok):
-            return r.json()
-        else:
-            return False
+        return self.put(temp_url)
 
     def querybalance(self, payer, pay_password):
         # query the personal balance from the ulord platform
@@ -240,16 +231,7 @@ class UlordHelper(object):
             'username': payer,
             'pay_password':pay_password
         }
-        print(self.ulord_querybalance)
-        print(data)
-        r = requests.post(url=self.ulord_querybalance, json=data, headers=self.ulord_head)
-        print(r.status_code)
-        print(r.json())
-        print(r.json().get("reason"))
-        if (r.status_code == requests.codes.ok) & (r.json().get("errcode") == 0):
-            return r.json().get("result")
-        else:
-            return False
+        return self.post(self.ulord_querybalance, data)
 
     def checkisbought(self, payer, claim_id):
         # query the personal balance from the ulord platform
@@ -257,16 +239,7 @@ class UlordHelper(object):
             'username': payer,
             'claim_id': claim_id
         }
-        print(self.ulord_checkbought)
-        print(data)
-        r = requests.post(url=self.ulord_checkbought, json=data, headers=self.ulord_head)
-        print(r.status_code)
-        print(r.json())
-        print(r.json().get("reason"))
-        if (r.status_code == requests.codes.ok) & (r.json().get("errcode") == 0):
-            return r.json().get("result").get("ipfs_hash")
-        else:
-            return False
+        return self.post(self.ulord_checkbought, data)
 
     def queryuserpublished(self, wallet_username, page=1, num=10):
         # query user published from ulort platform
@@ -274,16 +247,7 @@ class UlordHelper(object):
             'author': wallet_username,
         }
         temp_url = self.ulord_userpublished + "{0}/{1}".format(page, num)
-        print(temp_url)
-        print(data)
-        r = requests.post(url=temp_url, json=data, headers=self.ulord_head)
-        print(r.status_code)
-        print(r.json())
-        print(r.json().get("reason"))
-        if (r.status_code == requests.codes.ok) & (r.json().get("errcode") == 0):
-            return r.json().get("result")
-        else:
-            return False
+        return self.put(temp_url)
 
     def queryuserbought(self, wallet_username, page=1, num=10):
         # query user published from ulort platform
@@ -291,16 +255,7 @@ class UlordHelper(object):
             'customer': wallet_username,
         }
         temp_url = self.ulord_userbought + "{0}/{1}".format(page, num)
-        print(temp_url)
-        print(data)
-        r = requests.post(url=temp_url, json=data, headers=self.ulord_head)
-        print(r.status_code)
-        print(r.json())
-        print(r.json().get("reason"))
-        if (r.status_code == requests.codes.ok) & (r.json().get("errcode") == 0):
-            return r.json().get("result")
-        else:
-            return False
+        return self.post(temp_url, data)
 
 
 ulord_transmitter = UlordTransmitter()
