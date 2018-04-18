@@ -25,9 +25,10 @@
     <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
     
 #### 基于CDN的IPFS API提供IpfsApi构造函数作为全局window对象的一种方法。如下：
-    var ipfs = window.IpfsApi('localhost', '5001')   //本地搭建服务器
 
-    var ipfs = window.IpfsApi('114.67.37.2', '20418')   //外部搭建服务器
+    var ipfs = window.IpfsApi('localhost', '5001')   //本地搭建服务器
+    
+    var ipfs = window.IpfsApi('114.67.37.2', '20418')   //外部搭建服务器
 
 #### 本地测试是否搭建成功
     ipfs.id()
