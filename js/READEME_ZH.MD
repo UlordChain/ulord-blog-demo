@@ -1,6 +1,6 @@
 项目简介
 ------
-一个基于nodejs中间层、express框架及paython后台搭建的ulord博客系统demo。</br>
+一个基于nodejs中间层、express框架及paython后台搭建的ulord开放平台开发的博客系统demo。</br>
 
 效果实现
 ------
