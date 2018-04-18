@@ -12,7 +12,7 @@
 
 安装
 ------
-    git clone git@github.com:UlordChain/ulord-blog-demo.git
+    git clone git@github.com:UlordChain/ulord-blog-demo.git
     cd /js/ulord-blog  
     npm install  
     npm start
