@@ -19,7 +19,7 @@
 
 注意事项 
 ------
-分布式存储引入需引用ipfs技术，ipfs文档移步[https://github.com/ipfs/js-ipfs](https://github.com/ipfs/js-ipfs)</br>
+分布式存储引入需引用ipfs技术，ipfs文档移步[https://github.com/ipfs/js-ipfs-api](https://github.com/ipfs/js-ipfs-api)</br>
 
 #### 查看是否搭建成功
     ipfs.id()
