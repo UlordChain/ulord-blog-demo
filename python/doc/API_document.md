@@ -16,6 +16,7 @@ args:json
 |password | 密码 |是|
 |cellphone | 手机号 |否|
 |email | 邮箱 |否|
+
 {
 	"username":"test",
 	"password":"123",
@@ -541,7 +542,7 @@ return:
 }
 ```
 
-~~## Modify Blog Info 修改文章信息~~
+## ~~Modify Blog Info 修改文章信息~~
 
 ~~URL:http://192.168.14.240:5000/blog/modify~~
 
@@ -551,13 +552,13 @@ return:
 
 ~~args：json~~
 
-~~| arg      | comment   |  是否必填  |~~
-~~| ----  | :-----:  |  :----:  |~~
-~~|title | 标题 |是|~~
-~~|body | 博客内容 |否|~~
-~~|amount | 定价 |否|~~
-~~|tag | 标签 |否|~~
-~~|description|描述|否|~~
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|title | 标题 |是|
+|body | 博客内容 |否|
+|amount | 定价 |否|
+|tag | 标签 |否|
+|description|描述|否|
 
 ~~return:~~
 ```python
@@ -567,7 +568,7 @@ return:
 }
 ```
 
-~~## Record Blog 添加博客访问~~
+## ~~Record Blog 添加博客访问~~
 
 ~~URL:http://192.168.14.240:5000/blog/record~~
 
@@ -577,9 +578,9 @@ return:
 
 ~~args：json~~
 
-~~| arg      | comment   |  是否必填  |~~
-~~| ----  | :-----:  |  :----:  |~~
-~~|blog_ID | 博客的ID |是|~~
+| ~~arg~~     | ~~comment~~   |  ~~是否必填~~  |
+| ----  | :-----:  |  :----:  |
+|~~blog_ID~~ | ~~博客的ID~~ |~~是~~|
 
 ~~return:~~
 ```python
