@@ -42,7 +42,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -83,7 +83,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -133,7 +133,7 @@ return:
 失败：
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -198,7 +198,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -251,7 +251,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -296,7 +296,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -328,7 +328,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -360,7 +360,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -425,7 +425,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -489,7 +489,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -540,7 +540,7 @@ return:
 失败
 ```python
 {
-	"errcode": 错误码,
+    "errcode": 错误码,
     "reason": "错误原因"
 }
 ```
@@ -647,23 +647,21 @@ return:
 
     # 应用服务级错误码
     # 1、DB查询验证
-	60000:{'errcode':60000,'reason':'用户已存在.'},
-	60001:{'errcode':60001,'reason':'邮箱已存在.'},
-	60002:{'errcode':60002,'reason':'用户不存在.'},
-	60003:{'errcode':60003,'reason':'密码错误.'},
-	60004:{'errcode':60001,'reason':'邮箱已存在.'}
-	60005:{'errcode':60005,'reason':'数据库提交失败.'}
-
-	 # 2. 请求参数验证相关
-	60100:{'errcode':60100,'reason':'缺少参数.'},
-	60101:{'errcode':60101,'reason':'参数长度不符.'},
-	60102:{'errcode':60102,'reason':'参数必须为json格式.'},
-	60103:{'errcode':60103,'reason':'需要token.'},
-	60104:{'errcode':60104,'reason':'无效的token.'},
-	60105:{'errcode':60105,'reason':'无效的邮箱.'},
-	60106:{'errcode':60106,'reason':'无效的手机号.'},
-
-	# 3.其他操作
-	60200:{'errcode':60200,'reason':'上传文件失败.'},
+    60000:{'errcode':60000,'reason':'用户已存在.'},
+    60001:{'errcode':60001,'reason':'邮箱已存在.'},
+    60002:{'errcode':60002,'reason':'用户不存在.'},
+    60003:{'errcode':60003,'reason':'密码错误.'},
+    60004:{'errcode':60001,'reason':'邮箱已存在.'}
+    60005:{'errcode':60005,'reason':'数据库提交失败.'}    
+    # 2. 请求参数验证相关
+    60100:{'errcode':60100,'reason':'缺少参数.'},
+    60101:{'errcode':60101,'reason':'参数长度不符.'},
+    60102:{'errcode':60102,'reason':'参数必须为json格式.'},
+    60103:{'errcode':60103,'reason':'需要token.'},
+    60104:{'errcode':60104,'reason':'无效的token.'},
+    60105:{'errcode':60105,'reason':'无效的邮箱.'},
+    60106:{'errcode':60106,'reason':'无效的手机号.'},    
+    # 3.其他操作    	
+    60200:{'errcode':60200,'reason':'上传文件失败.'},
 }
 ```
