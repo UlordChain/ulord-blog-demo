@@ -17,12 +17,15 @@ args:json
 |cellphone | 手机号 |否|
 |email | 邮箱 |否|
 
+```python
 {
 	"username":"test",
 	"password":"123",
 	"cellphone":"15278559846"
 	"email":"15574859643@163.com"
 }
+```
+
 return:
 
 成功
@@ -554,11 +557,11 @@ return:
 
 | arg      | comment   |  是否必填  |
 | ----  | :-----:  |  :----:  |
-|title | 标题 |是|
-|body | 博客内容 |否|
-|amount | 定价 |否|
-|tag | 标签 |否|
-|description|描述|否|
+|~~title~~ | ~~标题 ~~|~~是~~|
+|~~body~~ | ~~博客内容 ~~|~~否~~|
+|~~amount~~ | ~~定价 ~~|~~否~~|
+|~~tag~~ | ~~标签 ~~|~~否~~|
+|~~description~~|~~描述~~|~~否~~|
 
 ~~return:~~
 ```python
@@ -578,7 +581,7 @@ return:
 
 ~~args：json~~
 
-| ~~arg~~     | ~~comment~~   |  ~~是否必填~~  |
+| arg     | comment   |  是否必填  |
 | ----  | :-----:  |  :----:  |
 |~~blog_ID~~ | ~~博客的ID~~ |~~是~~|
 
@@ -590,3 +593,77 @@ return:
 }
 ```
 
+## 附录A:错误码对照表
+
+```python
+{
+    # 正常
+    0:{'errcode':0,'reason':'success'},  # 可以重写reason与result内容
+
+    # HTTP协议错误码
+    400:{'errcode':400,'reason':'错误的请求.'},
+    403:{'errcode':403,'reason':'您没有权限进行此操作.'},
+    404:{'errcode':404,'reason':'Api不存在.'},
+    405:{'errcode':405,'reason':'http请求方法不允许.'},
+    500:{'errcode':500,'reason':'Api出错了, 请检查url以及参数.'},
+
+    # 系统级错误码
+    10001:{'errcode':10001,'reason':'错误的请求KEY.'},
+    10002:{'errcode':10002,'reason':'该KEY无请求权限.'},
+    10003:{'errcode':10003,'reason':'KEY过期.'},
+    10004:{'errcode':10004,'reason':'被禁止的IP.'},
+    10005:{'errcode':10005,'reason':'被禁止的KEY.'},
+    10006:{'errcode':10006,'reason':'当前IP请求超过限制.'},
+    10007:{'errcode':10007,'reason':'请求超过次数限制.'},
+    10008:{'errcode':10008,'reason':'系统内部异常.'},
+    10009:{'errcode':10009,'reason':'接口维护.'},
+    10010:{'errcode':10010,'reason':'接口停用.'},
+    10011:{'errcode':10011,'reason':'当前没有登录用户,请登录.'},
+    10012:{'errcode':10012,'reason':'缺少应用KEY值.'},
+    10013:{'errcode':10013,'reason':'无权限进行此操作.'},
+
+    # 服务级错误码
+    # 1. DB查询验证
+    20000:{'errcode':20000,'reason':'用户已存在.'},
+    20001:{'errcode':20001,'reason':'邮箱已存在.'},
+    20002:{'errcode':20002,'reason':'应用名已存在.'},
+    20003:{'errcode':20003,'reason':'用户不存在.'},
+    20004:{'errcode':20004,'reason':'密码错误.'},
+    20005:{'errcode':20005,'reason':'数据不存在.'},
+    20006:{'errcode':20006,'reason':'用户被禁用.'},
+    20007:{'errcode':20007,'reason':'资源不存在.'},
+    20008:{'errcode':20008,'reason':'资源需付费.'},
+
+    # 2. 请求参数验证相关
+    20100:{'errcode':20100,'reason':'缺少参数.'},
+    20101:{'errcode':20101,'reason':'参数长度不符.'},
+    20102:{'errcode':20102,'reason':'参数必须为json格式.'},
+    # 3. 钱包相关接口调用
+    20200:{'errcode':20200,'reason':'调用钱包接口失败.'},
+    20201:{'errcode':20201,'reason':'资源发布失败.'},
+    20202:{'errcode':20202,'reason':'资源消费失败.'},
+    20203:{'errcode':20203,'reason':'查询余额失败.'},
+    20204:{'errcode':20204,'reason':'创建钱包失败.'},
+
+    # 应用服务级错误码
+    # 1、DB查询验证
+	60000:{'errcode':60000,'reason':'用户已存在.'},
+	60001:{'errcode':60001,'reason':'邮箱已存在.'},
+	60002:{'errcode':60002,'reason':'用户不存在.'},
+	60003:{'errcode':60003,'reason':'密码错误.'},
+	60004:{'errcode':60001,'reason':'邮箱已存在.'}
+	60005:{'errcode':60005,'reason':'数据库提交失败.'}
+
+	 # 2. 请求参数验证相关
+	60100:{'errcode':60100,'reason':'缺少参数.'},
+	60101:{'errcode':60101,'reason':'参数长度不符.'},
+	60102:{'errcode':60102,'reason':'参数必须为json格式.'},
+	60103:{'errcode':60103,'reason':'需要token.'},
+	60104:{'errcode':60104,'reason':'无效的token.'},
+	60105:{'errcode':60105,'reason':'无效的邮箱.'},
+	60106:{'errcode':60106,'reason':'无效的手机号.'},
+
+	# 3.其他操作
+	60200:{'errcode':60200,'reason':'上传文件失败.'},
+}
+```
