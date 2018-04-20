@@ -1,5 +1,5 @@
 
-Project Profile [中文](https://github.com/UlordChain/ulord-blog-demo/blob/master/js/READEME_ZH.MD)
+Project Profile [中文版](https://github.com/UlordChain/ulord-blog-demo/blob/master/js/READEME_ZH.MD)
 ------
 A blog system demo of ulord open platform based on nodejs middle layer, express framework and paython background.</br>
 
