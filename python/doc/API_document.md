@@ -2,6 +2,72 @@
 
 This is a document of blog web's API.It services for front-end.
 
+## Get Publickey 获取公钥
+
+URL:http://192.168.14.240:5000/user/password
+
+method: get
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "pubkey": "..."
+    }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
+## test encrypt 测试加密
+
+URL:http://192.168.14.240:5000/user/password
+
+method: post
+
+args:json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|password | 加密信息 |是|
+
+```python
+{
+	"password":"..."
+}
+```
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "password": "加密原文"
+    }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
 ## Register 注册
 
 URL:http://192.168.14.240:5000/user/regist

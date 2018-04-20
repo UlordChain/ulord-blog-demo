@@ -41,7 +41,7 @@ def auth_login_required():
 def get_pubkey():
     print("start get password")
     if request.method == 'GET':
-        print("response")
+        # print("response")
         return jsonify({
             'errcode': 0,
             'reason': "success",
