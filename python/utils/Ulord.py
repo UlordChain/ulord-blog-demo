@@ -196,13 +196,21 @@ class UlordHelper(object):
         # publish data to the ulord platform
         return self.post(self.ulord_publish, data)
 
-    def transaction(self, payer, claim_id, pay_password):
+    def transaction(self, payer, claim_id, pay_password, isads=False):
         # record the transaction to the ulord platform
+
         data = {
             'username': payer,
-            'claim_id': claim_id,
-            'pay_password':pay_password
+            'claim_id': claim_id
         }
+        if isads:
+            data.update({
+                'author_pay_password': pay_password
+            })
+        else:
+            data.update({
+                'customer_pay_password': pay_password
+            })
         return self.post(self.ulord_transaction, data)
 
     def paytouser(self, username):

@@ -256,9 +256,9 @@ return:
 }
 ```
 
-## Pay 支付
+## Pay blogs 支付博客
 
-URL:http://192.168.14.240:5000/pay
+URL:http://192.168.14.240:5000/pay/blogs
 
 method:post
 
@@ -301,6 +301,51 @@ return:
 }
 ```
 > IPFS 支持大部分语言的接口,[js参考链接](https://github.com/ipfs/js-ipfs-api)
+
+## Pay ADs 支付广告
+
+URL:http://192.168.14.240:5000/pay/ads
+
+method:post
+
+head:token
+
+args：json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|author | 博客作者名 |是|
+|claim_id | 博客id |是|
+
+```python
+{
+	"author":"justin",
+	"claim_id":"ec3c93680884d8b1aee25242f64f79f8bd847c57"
+}
+```
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result":{
+        "ipfs_hash":ipfs_hash,
+    }
+}
+
+# 支付成功返回文件的hash值，通过IPFS接口获取数据
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
 
 ## List Personal Info 列出个人信息
 

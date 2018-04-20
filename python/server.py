@@ -13,6 +13,7 @@ from utils.Ulord import ulord_transmitter, ulord_helper
 from utils import FileHelper
 from config import baseconfig
 from utils.Checker import checker
+from utils.encryption import rsahelper
 
 
 def auth_login_required():
@@ -34,6 +35,29 @@ def auth_login_required():
             'reason': "无效的token"
         }
     return login_user
+
+
+@app.route('/user/password', methods=['GET', 'POST'])
+def get_pubkey():
+    print("start get password")
+    if request.method == 'GET':
+        print("response")
+        return jsonify({
+            'errcode': 0,
+            'reason': "success",
+            'result': {
+                "pubkey": rsahelper.pubkeybytes
+            }
+        })
+    elif request.method == 'POST':
+        message = request.json.get("password")
+        return jsonify({
+            'errcode': 0,
+            'reason': 'success',
+            'result': {
+                'password': rsahelper.decrypt(rsahelper.privkey, message)
+            }
+        })
 
 
 @app.route('/user/regist',methods=['POST'])
@@ -217,8 +241,8 @@ def check_bought():
     return jsonify(ulord_helper.checkisbought(current_user.wallet, claim_ids))
 
 
-@app.route('/pay',methods=['POST'])
-def pay():
+@app.route('/pay/blogs',methods=['POST'])
+def pay_blogs():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -235,6 +259,22 @@ def pay():
             'reason': '密码错误'
         })
     return jsonify(ulord_helper.transaction(current_user.wallet, claim_id, current_user.pay_password))
+
+
+@app.route('/pay/ads',methods=['POST'])
+def pay_ads():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    claim_id = request.json.get('claim_id')
+    author = request.json.get('author')
+    if claim_id is None or author is None:
+        return jsonify({
+            'errcode': 60100,
+            'reason': "缺少参数"
+        })
+    pay_password = User.query.filter_by(username=author).first().pay_password
+    return jsonify(ulord_helper.transaction(current_user.wallet, claim_id, pay_password, True))
 
 
 @app.route('/user/info',methods=['GET'])

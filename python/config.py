@@ -3,6 +3,9 @@
 # @Author: PuJi
 # @Date  : 2018/4/12 0012
 
+import os
+
+
 class BaseConfig(object):
 
     def __init__(self):
@@ -48,6 +51,11 @@ class BaseConfig(object):
         # activity
         self.activity = True
         self.amount = 10
+
+        # encryption
+        self.utilspath = os.path.join(os.getcwd(), 'utils')
+        self.pubkeypath = os.path.join(self.utilspath, 'public.pem')
+        self.privkeypath = os.path.join(self.utilspath, 'private.pem')
 
 
 baseconfig = BaseConfig()
