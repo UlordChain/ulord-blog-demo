@@ -20,7 +20,7 @@ Installation
 
 Attention: 
 ------
-Distributed storage needs ipfs technology. Check ipfs-api for detailed documentation on[https://github.com/ipfs/js-ipfs-api](https://github.com/ipfs/js-ipfs-api)。</br>
+Distributed storage needs ipfs technology. Check ipfs-api for detailed documentation on [https://github.com/ipfs/js-ipfs-api](https://github.com/ipfs/js-ipfs-api)。</br>
 
 #### Introduce CDN
     <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
