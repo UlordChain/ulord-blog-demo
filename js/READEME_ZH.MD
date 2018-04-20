@@ -1,4 +1,4 @@
-项目简介
+项目简介 [英文版](https://github.com/UlordChain/ulord-blog-demo/blob/master/js/README.MD)
 ------
 一个基于nodejs中间层、express框架及paython后台搭建的ulord开放平台开发的博客系统demo。</br>
 
