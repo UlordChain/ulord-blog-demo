@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/js/layer-v3.1.1/layer/theme/default/layer.css">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-paginator.js"></script>
+    <script src="/js/layer-v3.1.1/layer/layer.js"></script>
+    <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+   <div class="container">
+        <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3>博客首页</h3>
+                    <a class="pull-right" href="/info">个人中心</a>
+                    <a href="/release" class="pull-right">发布</a>
+                </div>
+                <div class="panel-body">
+                    <% if (!error) { %>
+                        <% data.forEach(function(item, index) { %>   
+                    <div>
+                        <div class="item-blog">
+                            <div class="item">
+                                <div>
+                                    <div>
+                                        <img src="/img/head.jpg" alt="" class="head-img">
+                                        <div class="author"><%= item.author %></div>
+                                    </div>
+                                    <div>
+                                        <h4 class="item-title" uid="<%= item.claim_id %>"><%= item.title %></h4>
+                                    </div>
+                                </div>
+                                <div class="item-main">
+                                    <p class="intro"><%= item.des %></p>
+                                </div>
+                                <div class="item-tips-wrap">
+                                    <% if (item.tag) { %>
+                                    <% item.tag.forEach(function(tag, index) { %>    
+                                        <span class="item-tag"><%= tag %></span>
+                                        <% }) %>
+                                    <% } %>
+                
+                                        <span class="price"><%= item.price %>ULD</span>
+                                
+                                        <% if (isPayList[index]) { %>
+                                        <span>已付费</span>
+                                        <span style="opacity: 0;" class="hash"><%= isPayList[index] %></span>
+                                        <% } %>
+                                
+    
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                    <% }) %>
+                <% } %>
+                <%if(total>1){%>
+                    <nav>
+                      <ul class="pagination">
+                        <li>
+                          <a href="home?<%=url%>&page=<%=page!=1?(parseInt(page)-1):page;%>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <%for(var i=1;i<=total;i++){%>
+                            <%if(i==page){%>
+                                <li class="active"><a href="home?<%=url%>&page=<%=i%>"><%=i%></a></li>
+                            <% } else { %>
+                                <li><a href="home?<%=url%>&page=<%=i%>"><%=i%></a></li>
+                            <% } %>
+                        <% } %>
+                        <li>
+                          <a href="home?<%=url%>&page=<%=total!=page?(parseInt(page)+1):page;%>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                <% } %>
+            </div>
+   </div>
+    
+        
+        <script type="text/javascript">
+            var ipfs = window.IpfsApi('114.67.37.2', '20418')
+            ipfs.id()
+                .then((id) => {
+                    console.log('my id is: ', id)
+                })
+                .catch((err) => {
+                    console.log('Fail: ', err)
+                })
+                function Utf8ArrayToStr(array) {
+                    var out, i, len, c;
+                    var char2, char3;
+
+                    out = "";
+                    len = array.length;
+                    i = 0;
+                    while(i < len) {
+                    c = array[i++];
+                    switch(c >> 4)
+                    { 
+                    case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+                        // 0xxxxxxx
+                        out += String.fromCharCode(c);
+                        break;
+                    case 12: case 13:
+                        // 110x xxxx   10xx xxxx
+                        char2 = array[i++];
+                        out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                        break;
+                    case 14:
+                        // 1110 xxxx  10xx xxxx  10xx xxxx
+                        char2 = array[i++];
+                        char3 = array[i++];
+                        out += String.fromCharCode(((c & 0x0F) << 12) |
+                                    ((char2 & 0x3F) << 6) |
+                                    ((char3 & 0x3F) << 0));
+                        break;
+                    }
+                    }
+
+                    return out;
+                } 
+            $('.item-title').on('click', function () {
+                var amount = parseFloat($(this).parents('.item').find('.price').text());
+                if($(this).parents('.item').find('.hash').text()) {
+                    var author = $(this).parents('.item').find('.author').text();
+                    
+                    var title = $(this).text();
+                    var id = $(this).attr('uid');
+                    ipfs.files.get($(this).parents('.item').find('.hash').text(),function (err,files) {
+                                if (err || typeof files == "undefined") {
+                                console.log(err);
+                                } else {
+                                    console.log(files[0].content);
+                                    var array = Array.from(files[0].content)
+                                    window.sessionStorage.title = title;
+                                    window.sessionStorage.amount = amount;
+                                    
+                                    window.sessionStorage.content = Utf8ArrayToStr(array);
+                                    // window.location.href = "/details?id="+id;
+                                    window.location.href = "/details";
+                                    console.log('很重要', Utf8ArrayToStr(array));
+                                }
+                            })
+                    
+                } else {
+                    var author = $(this).parents('.item').find('.author').text();
+                    var amount = parseFloat($(this).parents('.item').find('.price').text());
+                    var title = $(this).text();
+                    console.log(amount);
+                layer.confirm("该博客需支付"+amount+"Ulord币观看", {
+                    btn: ['付钱看', '考虑下'], //按钮
+                    title: '支付提示'
+                }, function (index) {
+                    layer.close(index);
+                    layer.prompt({
+                        title: '请输入密码，并确认',
+                        formType: 1,
+                    }, function (pass, index) {
+                        $.ajax({
+                            url: '/pay',
+                            type: 'POST',
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                password: pass,
+                                title: title,
+                                auth: author,
+                                amount: amount,
+                            })
+                        }).done(function(res){
+                            console.log(res);
+                            if(res.code == 1){
+                                ipfs.files.get(res.hash,function (err,files) {
+                                if (err || typeof files == "undefined") {
+                                    layer.close(wait);
+                                console.log(err);
+                                } else {
+                                    layer.close(wait);
+                                    console.log(files[0].content);
+                                    var array = Array.from(files[0].content)
+                                    window.sessionStorage.title = title;
+                                    window.sessionStorage.amount = amount;
+                                    window.sessionStorage.author = author;
+                                    window.sessionStorage.content = Utf8ArrayToStr(array);
+                                    window.location.href = '/details'
+                                    console.log('很重要', Utf8ArrayToStr(array));
+                                    
+                                }
+                            })
+                            } else if (res.code == -2) {
+                                layer.close(wait);
+                                layer.msg('支付失败!账户余额不足', {time: 1000})
+                            } else if (res.code == -3) {
+                                layer.close(wait);
+                                layer.msg('密码错误！', {time: 1000})
+                            }
+                            
+                        })
+                        var wait = layer.load(0, {shade: false});
+                        layer.close(index);
+                    });
+                }, function (index) {
+                    layer.close(index);
+                });
+                }
+                
+            })
+        </script>
+</body>
+
+</html>
