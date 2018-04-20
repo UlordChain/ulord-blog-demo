@@ -43,7 +43,7 @@ args:json
 
 ```python
 {
-	"password":"..."
+	"password":"加密后的密文"
 }
 ```
 
@@ -176,7 +176,7 @@ args：json
 {
 	"title":"the first blog",
 	"body":"This is a first blog.And it's just a test.",
-	"amunt":0.02,
+	"amount":0.02,
 	"tag":["test","first"],
 	"description":"This is a test blog."
 }
@@ -762,8 +762,9 @@ return:
     60001:{'errcode':60001,'reason':'邮箱已存在.'},
     60002:{'errcode':60002,'reason':'用户不存在.'},
     60003:{'errcode':60003,'reason':'密码错误.'},
-    60004:{'errcode':60001,'reason':'邮箱已存在.'}
-    60005:{'errcode':60005,'reason':'数据库提交失败.'}    
+    60004:{'errcode':60001,'reason':'邮箱已存在.'},
+    60005:{'errcode':60005,'reason':'数据库提交失败.',
+    60006:{'errcode':60006,'reason':'作者已失效.'}
     # 2. 请求参数验证相关
     60100:{'errcode':60100,'reason':'缺少参数.'},
     60101:{'errcode':60101,'reason':'参数长度不符.'},
@@ -772,7 +773,10 @@ return:
     60104:{'errcode':60104,'reason':'无效的token.'},
     60105:{'errcode':60105,'reason':'无效的邮箱.'},
     60106:{'errcode':60106,'reason':'无效的手机号.'},    
-    # 3.其他操作    	
+    # 3.文件操作
     60200:{'errcode':60200,'reason':'上传文件失败.'},
+    # 3.活动相关
+    60300:{'errcode':60200,'reason':'活动取消.'},
+    60301:{'errcode':60301,'reason':'已赠送.'},
 }
 ```

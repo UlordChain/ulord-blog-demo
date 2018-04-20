@@ -100,9 +100,9 @@ def regist():
     if regist_result.get("errcode") != 0:
         return jsonify(regist_result)
 
-    credit_result = ulord_helper.paytouser(user.wallet)
-    if credit_result.get("errcode") != 0:
-        return jsonify(credit_result)
+    # credit_result = ulord_helper.paytouser(user.wallet)
+    # if credit_result.get("errcode") != 0:
+    #     return jsonify(credit_result)
 
     if cellphone:
         user.cellphone = cellphone
@@ -123,6 +123,37 @@ def regist():
             "token": token
         }
     })
+
+
+@app.route('/user/activity', methods=['GET'])
+def activity():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    if current_user.activity == baseconfig.amount:
+        return jsonify({
+            'errcode': 60301,
+            'reason': "已赠送"
+        })
+    else:
+        credit_result = ulord_helper.paytouser(current_user.wallet)
+        for retry in range(2):
+            if credit_result.get("errcode") == 0:
+                break
+            else:
+                credit_result = ulord_helper.paytouser(current_user.wallet)
+
+        if credit_result.get("errcode") != 0:
+            return jsonify(credit_result)
+        else:
+            current_user.activity = baseconfig.amount
+            return jsonify({
+                "errcode": 0,
+                "reason": "success",
+                "result":{
+                    "amount": baseconfig.amount,
+                    }
+            })
 
 
 @app.route('/user/login',methods=['POST'])
@@ -273,7 +304,13 @@ def pay_ads():
             'errcode': 60100,
             'reason': "缺少参数"
         })
-    pay_password = User.query.filter_by(username=author).first().pay_password
+    author_user = User.query.filter_by(username=author).first()
+    if not author_user:
+        return jsonify({
+            "errcode": 60006,
+            "reason": "作者已失效"
+        })
+    pay_password = author_user.pay_password
     return jsonify(ulord_helper.transaction(current_user.wallet, claim_id, pay_password, True))
 
 

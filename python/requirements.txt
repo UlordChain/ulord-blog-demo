@@ -12,6 +12,7 @@ Jinja2==2.10
 MarkupSafe==1.0
 passlib==1.7.1
 pyasn1==0.4.2
+pycryptodome==3.6.1
 requests==2.18.4
 rsa==3.4.2
 six==1.11.0

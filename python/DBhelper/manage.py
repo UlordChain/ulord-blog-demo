@@ -33,6 +33,7 @@ class User(db.Model):
     timestamp = db.Column(db.String(10))
     wallet = db.Column(db.String(34))
     pay_password = db.Column(db.String(128))
+    activity = db.Column(db.Float, default =0)
     # Reserved field
     pre1= db.Column(db.String())
     pre2 = db.Column(db.String())

@@ -155,6 +155,7 @@ class UlordHelper(object):
         self.ulord_querybalance = baseconfig.ulord_url + baseconfig.ulord_querybalance  # qurey balance webURL
         self.ulord_userbought = baseconfig.ulord_url + baseconfig.ulord_userbought # query the blog that user has bought
         self.ulord_userpublished = baseconfig.ulord_url + baseconfig.ulord_userpublished # query the blog that user has published
+        self.ulord_billings = baseconfig.ulord_url + baseconfig.ulord_billings
         # TODO ulord other URL
 
     def post(self, url, data):
@@ -224,7 +225,7 @@ class UlordHelper(object):
             return self.post(self.ulord_paytouser, data)
         else:
             return {
-                "errcode": 51000,
+                "errcode": 60300,
                 "reason": "活动取消"
             }
 
@@ -265,6 +266,10 @@ class UlordHelper(object):
         temp_url = self.ulord_userbought + "{0}/{1}/".format(page, num)
         return self.post(temp_url, data)
 
+    def getbillings(self, page=1, num=10):
+        # get billings info
+        pass
+    
 
 ulord_transmitter = UlordTransmitter()
 
