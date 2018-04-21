@@ -3,7 +3,7 @@
 # @Author: PuJi
 # @Date  : 2018/4/10 0010
 
-import os, time, requests
+import os, time, requests, json
 from uuid import uuid1
 
 from flask import request, g, jsonify
@@ -387,7 +387,17 @@ def get_billings():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    return jsonify(ulord_helper.querybillings(current_user.wallet))
+    platform_result = ulord_helper.querybillings(current_user.wallet)
+    try:
+        platform_result_json = json.loads(platform_result)
+
+        return jsonify()
+    except:
+        return jsonify({
+            "errocode":6,
+            'reason':"平台返回错误"
+        })
+
 
 
 @app.route('/user/billings/customer',methods=['POST'])
@@ -488,4 +498,4 @@ def modify_userinfo():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=6000)

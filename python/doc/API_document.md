@@ -113,6 +113,35 @@ return:
 }
 ```
 
+## Pay To User 优惠活动，给新注册的用户发10个ulord
+
+URL:http://192.168.14.240:5000/user/activity
+
+method: get
+
+head:token
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "amount": "打的钱数"
+    }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
 ## Login    登录
 
 URL:http://192.168.14.240:5000/user/login
