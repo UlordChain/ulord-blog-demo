@@ -32,9 +32,11 @@ class BaseConfig(object):
         self.ulord_queryblog = "/content/list/"
         self.ulord_querybalance = "/transactions/balance/"
         self.ulord_checkbought = "/transactions/check/"
-        self.ulord_userpublished = "/content/published/"
-        self.ulord_userbought = "/content/bought/"
-        self.ulord_billings = "/transactions/publisherinout/"
+        self.ulord_userpublished = "/content/publish/list/"
+        self.ulord_userbought = "/content/consume/list/"
+        self.ulord_publishaccount = "/transactions/publisher/account/"
+        self.ulord_customeraccount = "/transactions/customer/account/"
+        self.ulord_billings = "/transactions/publish/inout/"
         self.ulord_publish_num = "/transactions/publish/count/"
         # {
         #     'username':用户名,

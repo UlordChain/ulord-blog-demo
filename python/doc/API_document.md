@@ -634,6 +634,50 @@ return:
 }
 ```
 
+## List Billings 列出个人账单
+
+URL:http://192.168.14.240:5000/user/billings/
+
+method: get
+
+head:token
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "customer_expenditure": {  # 消费支出
+            "count": 2,  # 记录数量
+            "sum": 1.17755  # 总支出
+        },
+        "customer_income": {  # 消费收入
+            "count": 0,
+            "sum": null
+        },
+        "publisher_expenditure": {  # 发布支出
+            "count": 0,
+            "sum": null
+        },
+        "publisher_income": {  # 发布收入
+            "count": 0,
+            "sum": null
+        }
+    }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
 ## List Customer's Billings 列出作为消费者个人账单
 
 URL:http://192.168.14.240:5000/user/billings/customer

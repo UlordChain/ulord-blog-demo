@@ -382,6 +382,14 @@ def get_userbought():
     return jsonify(ulord_helper.queryuserbought(current_user.wallet, page, num))
 
 
+@app.route('/user/billings',methods=['GET'])
+def get_billings():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    return jsonify(ulord_helper.querybillings(current_user.wallet))
+
+
 @app.route('/user/billings/customer',methods=['POST'])
 def get_customerbillings():
     current_user = auth_login_required()  # check token

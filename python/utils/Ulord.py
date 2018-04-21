@@ -155,7 +155,9 @@ class UlordHelper(object):
         self.ulord_querybalance = baseconfig.ulord_url + baseconfig.ulord_querybalance  # qurey balance webURL
         self.ulord_userbought = baseconfig.ulord_url + baseconfig.ulord_userbought # query the blog that user has bought
         self.ulord_userpublished = baseconfig.ulord_url + baseconfig.ulord_userpublished # query the blog that user has published
-        self.ulord_billings = baseconfig.ulord_url + baseconfig.ulord_billings # query the customer's os author's billings according to the post data
+        self.ulord_publisher_account = baseconfig.ulord_url + baseconfig.ulord_publishaccount # query publisher's billings
+        self.ulord_customer_account = baseconfig.ulord_url + baseconfig.ulord_customeraccount # query customer's billings
+        self.ulord_billings = baseconfig.ulord_url + baseconfig.ulord_billings # query the user's billings
         self.ulord_published_num = baseconfig.ulord_url + baseconfig.ulord_publish_num # query the number of the blog that author has published.
         # TODO ulord other URL
 
@@ -272,7 +274,7 @@ class UlordHelper(object):
         data = {
             'customer': author,
         }
-        temp_url = self.ulord_billings + "{0}/{1}/".format(page, num)
+        temp_url = self.ulord_customer_account + "{0}/{1}/".format(page, num)
         return self.post(temp_url, data)
 
     def queryauthorbillings(self, author, page=1, num=10):
@@ -280,8 +282,15 @@ class UlordHelper(object):
         data = {
             'author': author,
         }
-        temp_url = self.ulord_billings + "{0}/{1}/".format(page, num)
+        temp_url = self.ulord_publisher_account + "{0}/{1}/".format(page, num)
         return self.post(temp_url, data)
+
+    def querybillings(self, username):
+        # get billings info
+        data = {
+            'username': username,
+        }
+        return self.post(self.ulord_billings, data)
 
     def querypublishnum(self, author):
         data = {
