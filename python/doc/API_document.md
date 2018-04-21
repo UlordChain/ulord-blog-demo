@@ -29,7 +29,7 @@ return:
 }
 ```
 
-## test encrypt 测试加密
+## <font color=#C0C0C0>test encrypt 测试加密</font>
 
 URL:http://192.168.14.240:5000/user/password
 
@@ -827,10 +827,10 @@ return:
 
 | arg      | comment   |  是否必填  |
 | ----  | :-----:  |  :----:  |
-|~~title~~ | ~~标题 ~~|~~是~~|
-|~~body~~ | ~~博客内容 ~~|~~否~~|
-|~~amount~~ | ~~定价 ~~|~~否~~|
-|~~tag~~ | ~~标签 ~~|~~否~~|
+|~~title~~ | ~~标题 ~~ |~~是~~|
+|~~body~~ | ~~博客内容 ~~ |~~否~~|
+|~~amount~~ | ~~定价 ~~ |~~否~~|
+|~~tag~~ | ~~标签 ~~ |~~否~~|
 |~~description~~|~~描述~~|~~否~~|
 
 ~~return:~~
