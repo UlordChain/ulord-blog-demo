@@ -356,6 +356,14 @@ def get_userpublished():
     return jsonify(ulord_helper.queryuserpublished(current_user.wallet, page, num))
 
 
+@app.route('/user/published/num',methods=['GET'])
+def get_userpublishednum():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    return jsonify(ulord_helper.querypublishnum(current_user.wallet))
+
+
 @app.route('/user/bought',methods=['POST'])
 def get_userbought():
     current_user = auth_login_required()  # check token
@@ -372,6 +380,42 @@ def get_userbought():
     if not num:
         num = 10
     return jsonify(ulord_helper.queryuserbought(current_user.wallet, page, num))
+
+
+@app.route('/user/billings/customer',methods=['POST'])
+def get_customerbillings():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    try:
+        page = request.json.get('page')
+        num = request.json.get('num')
+    except:
+        page = 1
+        num = 10
+    if not page:
+        page = 1
+    if not num:
+        num = 10
+    return jsonify(ulord_helper.querycustomerbillings(current_user.wallet, page, num))
+
+
+@app.route('/user/billings/author',methods=['POST'])
+def get_authorbillings():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    try:
+        page = request.json.get('page')
+        num = request.json.get('num')
+    except:
+        page = 1
+        num = 10
+    if not page:
+        page = 1
+    if not num:
+        num = 10
+    return jsonify(ulord_helper.queryauthorbillings(current_user.wallet, page, num))
 
 
 @app.route('/user/modify',methods=['POST'])

@@ -35,6 +35,7 @@ class BaseConfig(object):
         self.ulord_userpublished = "/content/published/"
         self.ulord_userbought = "/content/bought/"
         self.ulord_billings = "/transactions/publisherinout/"
+        self.ulord_publish_num = "/transactions/publish/count/"
         # {
         #     'username':用户名,
         #     'claim_id':博客ID

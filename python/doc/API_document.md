@@ -541,6 +541,35 @@ return:
 }
 ```
 
+## List Personal Published num 列出个人发布过的资源数量
+
+URL:http://192.168.14.240:5000/user/published/num
+
+method: get
+
+head:token
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "count": 0
+    }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
 ## List Personal Bought 列出个人购买过的资源
 
 URL:http://192.168.14.240:5000/user/bought
@@ -593,6 +622,136 @@ return:
         ],
         "pages": 6,
         "total": 6
+    }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
+## List Customer's Billings 列出作为消费者个人账单
+
+URL:http://192.168.14.240:5000/user/billings/customer
+
+method: post
+
+head:token
+
+args:json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|page|页数|否|
+|num|每页显示数|否|
+
+```python
+{
+	"page":1,
+	"num":2
+}
+```
+> 默认为每页10条数据，返回第一页
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "pages": 1,
+        "records": [
+            {
+                "author": "ads",
+                "create_timed": "2018-04-20T14:11:16.856288+00:00",
+                "customer": "shu",
+                "id": "bc12825bd069cf3f82158aadef60e87cbda76a6f",
+                "price": -0.02,
+                "title": "the first ads",
+                "txid": "4ba9370faeca247499d32815ea5be6179293c6306b8f88848691ff0e9c0cb513"
+            },
+            {
+                "author": "ads",
+                "create_timed": "2018-04-20T14:11:16.856288+00:00",
+                "customer": "tttttttttttt",
+                "id": "bc12825bd069cf3f82158aadef60e87cbda76a6f",
+                "price": -0.02,
+                "title": "the first ads",
+                "txid": "4ba9370faeca247499d32815ea5be6179293c6306b8f88848691ff0e9c0cb515"
+            }
+        ],
+        "total": 2
+    }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
+## List Author's Billings 列出作为发布者个人账单
+
+URL:http://192.168.14.240:5000/user/billings/author
+
+method: post
+
+head:token
+
+args:json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|page|页数|否|
+|num|每页显示数|否|
+
+```python
+{
+	"page":1,
+	"num":2
+}
+```
+> 默认为每页10条数据，返回第一页
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "pages": 1,
+        "records": [
+            {
+                "author": "ads",
+                "create_timed": "2018-04-20T14:11:16.856288+00:00",
+                "customer": "shu",
+                "id": "bc12825bd069cf3f82158aadef60e87cbda76a6f",
+                "price": -0.02,
+                "title": "the first ads",
+                "txid": "4ba9370faeca247499d32815ea5be6179293c6306b8f88848691ff0e9c0cb513"
+            },
+            {
+                "author": "ads",
+                "create_timed": "2018-04-20T14:11:16.856288+00:00",
+                "customer": "tttttttttttt",
+                "id": "bc12825bd069cf3f82158aadef60e87cbda76a6f",
+                "price": -0.02,
+                "title": "the first ads",
+                "txid": "4ba9370faeca247499d32815ea5be6179293c6306b8f88848691ff0e9c0cb515"
+            }
+        ],
+        "total": 2
     }
 }
 ```
