@@ -72,7 +72,10 @@ def regist():
             'errcode': 60100,
             'reason': "缺少参数"
         })
-    if User.query.filter_by(username=username).first() is not None and User.query.filter_by(wallet=username).first() is not None:
+    # if User.query.filter_by(username=username).first() is not None and User.query.filter_by(wallet=username).first() is not None:
+    # delete modify username.It will make the publish error
+    if User.query.filter_by(username=username).first() is not None and User.query.filter_by(
+                wallet=username).first() is not None:
         # existing user
         return jsonify({
             'errcode':60000,
@@ -99,10 +102,6 @@ def regist():
     regist_result = ulord_helper.regist(user.wallet, user.pay_password)
     if regist_result.get("errcode") != 0:
         return jsonify(regist_result)
-
-    # credit_result = ulord_helper.paytouser(user.wallet)
-    # if credit_result.get("errcode") != 0:
-    #     return jsonify(credit_result)
 
     if cellphone:
         user.cellphone = cellphone
@@ -224,7 +223,7 @@ def blog_publish():
         # TODO publish
         # init data schema
         data = ulord_helper.ulord_publish_data
-        data['author'] = current_user.username
+        data['author'] = current_user.wallet
         data['title'] = title
         data['tag'] = tags
         data['ipfs_hash'] = file_hash
@@ -387,16 +386,7 @@ def get_billings():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    platform_result = ulord_helper.querybillings(current_user.wallet)
-    try:
-        platform_result_json = json.loads(platform_result)
-
-        return jsonify()
-    except:
-        return jsonify({
-            "errocode":6,
-            'reason':"平台返回错误"
-        })
+    return jsonify(ulord_helper.querybillings(current_user.wallet))
 
 
 
@@ -438,10 +428,11 @@ def get_authorbillings():
 
 @app.route('/user/modify',methods=['POST'])
 def modify_userinfo():
+    # Delete modify username.It will make publish error
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    username = request.json.get('username')
+    # username = request.json.get('username')
     password = request.json.get('password')
     cellphone = request.json.get('cellphone')
     email = request.json.get('email')
@@ -465,36 +456,31 @@ def modify_userinfo():
                 'errcode': 60105,
                 'reason': '无效的邮箱'
             })
-    if username:
-        if (User.query.filter_by(username=username).first() is not None) & (User.query.filter_by(wallet=username).first() is not None):
-            # existing user
-            return jsonify({
-                'errcode': 60000,
-                'reason': "账户已存在"
-            })
-        current_user.username = username
+    # if username:
+    #     if (User.query.filter_by(username=username).first() is not None) & (User.query.filter_by(wallet=username).first() is not None):
+    #         # existing user
+    #         return jsonify({
+    #             'errcode': 60000,
+    #             'reason': "账户已存在"
+    #         })
+    #     current_user.username = username
     if new_password:
         current_user.hash_password(new_password)
     if cellphone:
         current_user.cellphone = cellphone
     if email:
         current_user.email = email
-    if db.session.commit():
-        return jsonify({
-            'errcode': 0,
-            'reason': "Success",
-            "result":{
-                "userid": current_user.id,
-                "username":current_user.username,
-                "email": current_user.email,
-                "cellphone": current_user.cellphone
-            }
-        })
-    else:
-        return jsonify({
-            'errcode': 60005,
-            'reason': "数据库提交失败"
-        })
+    db.session.commit()
+    return jsonify({
+        'errcode': 0,
+        'reason': "Success",
+        "result":{
+            "userid": current_user.id,
+            "username":current_user.username,
+            "email": current_user.email,
+            "cellphone": current_user.cellphone
+        }
+    })
 
 
 if __name__ == '__main__':

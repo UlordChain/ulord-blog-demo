@@ -840,7 +840,7 @@ return:
 ## Modify Personal Info 修改个人信息
 URL:http://192.168.14.240:5000/user/modify
 
-method: get
+method: post
 
 head:token
 
