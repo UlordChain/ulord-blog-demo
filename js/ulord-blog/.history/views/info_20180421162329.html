@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/js/layer-v3.1.1/layer/theme/default/layer.css">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/layer-v3.1.1/layer/layer.js"></script>
+    <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container info">
+        <h2>Ulord博客个人中心</h2>
+        <ul id="myTab" class="nav nav-tabs info-nav">
+            <li class="active">
+                <a href="#home" data-toggle="tab">
+                    我的资料</a>
+            </li>
+            <li>
+                <a href="#account" data-toggle="tab">我的账户</a>
+            </li>
+            <li>
+                <a href="#buyArticle" data-toggle="tab">购买文章</a>
+            </li>
+            <li>
+                <a href="#myArticle" data-toggle="tab">我的文章</a>
+            </li>
+        </ul>
+
+        <div id="myTabContent" class="tab-content info-content">
+                <% if (data) { %>
+                    <div class="tab-pane fade in active" id="home">
+                        <div>
+                            <span>用户名：</span>
+                            <span>
+                                <%= data.username %>
+                            </span>
+                            <i class="glyphicon glyphicon-pencil info-modify" name="用户名"></i>
+                        </div>
+                        <div>
+                            <% if (data.Email) { %>
+                                <span>邮箱：</span>
+                                <span>
+                                    <%= data.Email %>
+                                </span>
+                                <i class="glyphicon glyphicon-pencil info-modify" name="邮箱"></i>
+                                <% } else { %>
+                                    <span>邮箱：未填写邮箱</span>
+                                    <i class="glyphicon glyphicon-pencil info-modify" name="邮箱"></i>
+                                    <% } %>
+                        </div>
+                        <div>
+                            <% if (data.cellphone) { %>
+                                <span>电话：</span>
+                                <span>
+                                    <%= data.cellphone %>
+                                </span>
+                                <i class="glyphicon glyphicon-pencil info-modify" name="电话"></i>
+                                <% } else { %>
+                                    <span>电话：未填写电话</span>
+                                    <i class="glyphicon glyphicon-pencil info-modify" name="电话"></i>
+                                    <% } %>
+                                        <input type="button" class="btn modify-btn" value="修改" onclick="modify()">
+                        </div>
+                        <div>
+                            <span>密码:</span>
+                            <span>******</span>
+                            <i class="glyphicon glyphicon-pencil info-modify" name="密码"></i>
+                        </div>
+                    </div>
+                <% } %>
+
+                    <div class="tab-pane fade" id="account">
+                        <div>
+                            <% if (data2) { %>
+                                <div>
+                                    <h4>您的账号共有
+                                    <%= data3.total %> ULD</h4>
+                                    <% if (data2.customer_income.sum) { %>
+                                        <span>总文章收入
+                                        <%= data2.customer_income.sum %> ULD</span>
+                                        <% } else { %>
+                                            <span>总文章收入0 ULD</span>
+                                    <% } %>
+                                    <% if (data2.customer_expenditure.sum) { %>
+                                                    <span>总文章支出
+                                        <%= data2.customer_expenditure.sum %> ULD</span>
+                                    <% } else { %>
+                                                        <span>总文章支出0 ULD</span>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div>
+                            <table class="table">
+                                <caption>您的收入账单</caption>
+                                <tbody>
+                                    <tr>
+                                        <th>交易时间</th>
+                                        <th>交易类型</th>
+                                        <th>交易费用</th>
+                                        <th>目标账户</th>
+                                        <th>交易文章</th>
+                                    </tr>
+                                    <span></span>
+                                    <!-- <% data4.forEach(function(item, index) { %>
+                                        <tr>
+                                            <th><%= item.create_timed %></th>
+                                            <th>000</th>
+                                            <th><%= item.price %></th>
+                                            <th><%= item.customer %></th>
+                                            <th><%= item.the first ads %></th>
+                                        </tr>
+                                    <% }) %> -->
+                                   
+                                </tbody>
+                            </table>
+                            <table class="table">
+                                <caption>您的支出账单</caption>
+                                <tbody>
+                                    <tr>
+                                        <th>交易时间</th>
+                                        <th>文章收入</th>
+                                        <th>交易费用</th>
+                                        <th>目标账户</th>
+                                        <th>交易摘要</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="tab-pane fade" id="buyArticle">
+                        <p>购买文章</p>
+                    </div>
+                    <div class="tab-pane fade" id="myArticle">
+                        <p>我的文章
+                        </p>
+                    </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        $('.info-modify').hide();
+
+        function modify() {
+            $('.info-modify').show();
+        }
+        $('.info-modify').on('click', function () {
+            layer.prompt({
+                title: '请输入要修改为' + $(this).attr('name') + '，并确认',
+                formType: 1,
+            }, function () {
+                layer.prompt({
+                    title: '请输入密码，并确认'
+                }, function () {
+                    $.ajax({
+                        url: '/modeify',
+                        type: 'POST',
+                        contentType: "application/json",
+                        data: JSON.stringify({
+                            password: pass,
+                            claim_id: id
+                        })
+                    })
+                })
+            })
+        })
+    </script>
+
+    <!-- <script type="text/javascript">
+        var ipfs = window.IpfsApi('114.67.37.2', '20418')
+        ipfs.id()
+            .then((id) => {
+                console.log('my id is: ', id)
+            })
+            .catch((err) => {
+                console.log('Fail: ', err)
+            })
+            function Utf8ArrayToStr(array) {
+                var out, i, len, c;
+                var char2, char3;
+
+                out = "";
+                len = array.length;
+                i = 0;
+                while(i < len) {
+                c = array[i++];
+                switch(c >> 4)
+                { 
+                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+                    // 0xxxxxxx
+                    out += String.fromCharCode(c);
+                    break;
+                case 12: case 13:
+                    // 110x xxxx   10xx xxxx
+                    char2 = array[i++];
+                    out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                    break;
+                case 14:
+                    // 1110 xxxx  10xx xxxx  10xx xxxx
+                    char2 = array[i++];
+                    char3 = array[i++];
+                    out += String.fromCharCode(((c & 0x0F) << 12) |
+                                ((char2 & 0x3F) << 6) |
+                                ((char3 & 0x3F) << 0));
+                    break;
+                }
+                }
+
+                return out;
+            } 
+        $('.item-title').on('click', function () {
+            var author = $(this).parents('.item').find('.author').text();
+            var amount = parseInt($(this).parents('.item').find('.price').text());
+            var title = $(this).text();
+            ipfs.files.get($(this).attr('cid'),function (err,files) {
+                if (err || typeof files == "undefined") {
+                } else {
+                    var array = Array.from(files[0].content)
+                    window.sessionStorage.title = title;
+                    window.sessionStorage.amount = amount;
+                    window.sessionStorage.author = author;
+                    window.sessionStorage.content = Utf8ArrayToStr(array);
+                    window.location.href = '/details'
+                    console.log('很重要', Utf8ArrayToStr(array));
+                }
+            })
+        })
+    </script> -->
+</body>
+
+</html>
