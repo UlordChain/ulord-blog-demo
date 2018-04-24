@@ -72,6 +72,9 @@ def regist():
             'errcode': 60100,
             'reason': "缺少参数"
         })
+    username = rsahelper.decrypt(rsahelper.privkey, username)
+    password = rsahelper.decrypt(rsahelper.privkey, password)
+
     # if User.query.filter_by(username=username).first() is not None and User.query.filter_by(wallet=username).first() is not None:
     # delete modify username.It will make the publish error
     if User.query.filter_by(username=username).first() is not None and User.query.filter_by(
@@ -165,6 +168,8 @@ def login():
             'errcode': 60100,
             'reason': "缺少参数"
         })
+    username = rsahelper.decrypt(rsahelper.privkey, username)
+    password = rsahelper.decrypt(rsahelper.privkey, password)
     login_user = User.query.filter_by(username=username).first()
     if not login_user:
         # no user
@@ -271,6 +276,21 @@ def check_bought():
     return jsonify(ulord_helper.checkisbought(current_user.wallet, claim_ids))
 
 
+@app.route('/blog/views',methods=['POST'])
+def add_views():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    dbID = request.json.get('id')
+    if dbID is None:
+        return jsonify({
+            'errcode': 60100,
+            'reason': '缺少参数'
+        })
+    # add blog views
+    return jsonify(ulord_helper.addviews(dbID))
+
+
 @app.route('/pay/blogs',methods=['POST'])
 def pay_blogs():
     current_user = auth_login_required()  # check token
@@ -283,6 +303,7 @@ def pay_blogs():
             'errcode':60100,
             'reason':"缺少参数"
         })
+    password = rsahelper.decrypt(rsahelper.privkey, password)
     if not current_user.verify_password(password):
         return jsonify({
             'errcode': 60003,
@@ -345,14 +366,18 @@ def get_userpublished():
     try:
         page = request.json.get('page')
         num = request.json.get('num')
+        category = request.json.get('category')
     except:
         page = 1
         num = 10
+        category = 2  # 0-blog,1-ads,2-all
     if not page:
         page = 1
     if not num:
         num = 10
-    return jsonify(ulord_helper.queryuserpublished(current_user.wallet, page, num))
+    if not category or category!=0 or category!=1 :
+        category = 2  # 0-blog,1-ads,2-all
+    return jsonify(ulord_helper.queryuserpublished(current_user.wallet, page, num, category))
 
 
 @app.route('/user/published/num',methods=['GET'])
@@ -371,14 +396,18 @@ def get_userbought():
     try:
         page = request.json.get('page')
         num = request.json.get('num')
+        category = request.json.get('category')
     except:
         page = 1
         num = 10
+        category = 2  # 0-blog,1-ads,2-all
     if not page:
         page = 1
     if not num:
         num = 10
-    return jsonify(ulord_helper.queryuserbought(current_user.wallet, page, num))
+    if not category or category!=0 or category!=1 :
+        category = 2  # 0-blog,1-ads,2-all
+    return jsonify(ulord_helper.queryuserbought(current_user.wallet, page, num, category))
 
 
 @app.route('/user/billings',methods=['GET'])
@@ -390,8 +419,8 @@ def get_billings():
 
 
 
-@app.route('/user/billings/customer',methods=['POST'])
-def get_customerbillings():
+@app.route('/user/billings/income',methods=['POST'])
+def get_incomebillings():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -405,11 +434,11 @@ def get_customerbillings():
         page = 1
     if not num:
         num = 10
-    return jsonify(ulord_helper.querycustomerbillings(current_user.wallet, page, num))
+    return jsonify(ulord_helper.queryincomebillings(current_user.wallet, page, num))
 
 
-@app.route('/user/billings/author',methods=['POST'])
-def get_authorbillings():
+@app.route('/user/billings/outgo',methods=['POST'])
+def get_expensebillings():
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -423,7 +452,7 @@ def get_authorbillings():
         page = 1
     if not num:
         num = 10
-    return jsonify(ulord_helper.queryauthorbillings(current_user.wallet, page, num))
+    return jsonify(ulord_helper.queryoutgobillings(current_user.wallet, page, num))
 
 
 @app.route('/user/modify',methods=['POST'])
@@ -442,6 +471,13 @@ def modify_userinfo():
         return jsonify({
             'errcode': 60100,
             'reason': '缺少参数'
+        })
+    else:
+        password = rsahelper.decrypt(rsahelper.privkey, password)
+    if not current_user.verify_password(password):
+        return jsonify({
+            'errcode': 60003,
+            'reason': '密码错误'
         })
     # check cellphone and email
     if cellphone:
@@ -465,6 +501,7 @@ def modify_userinfo():
     #         })
     #     current_user.username = username
     if new_password:
+        new_password = rsahelper.decrypt(rsahelper.privkey, new_password)
         current_user.hash_password(new_password)
     if cellphone:
         current_user.cellphone = cellphone
@@ -484,4 +521,4 @@ def modify_userinfo():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=6000)
+    app.run(host='0.0.0.0', port=5050)

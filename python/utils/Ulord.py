@@ -139,15 +139,16 @@ class UlordTransmitter():
 class UlordHelper(object):
     # a helper to help request the ulord paltform
     def __init__(self):
+        # base URL
         self.ulord_url = baseconfig.ulord_url
         self.ulord_head = baseconfig.ulord_head
-
+        # regist URL
         self.ulord_regist = baseconfig.ulord_url + baseconfig.ulord_regist # ulord regist webURL
         self.ulord_paytouser = baseconfig.ulord_url + baseconfig.ulord_paytouser # ulord transfer webURL
-
+        # publish URL
         self.ulord_publish = baseconfig.ulord_url + baseconfig.ulord_publish  # ulord publish webURL
         self.ulord_publish_data = baseconfig.ulord_publish_data  # ulord publish data
-
+        # query URL
         self.ulord_queryblog = baseconfig.ulord_url + baseconfig.ulord_queryblog # query blog list webURL
         self.ulord_checkbought = baseconfig.ulord_url + baseconfig.ulord_checkbought # query if the blog has bought
         self.ulord_transaction = baseconfig.ulord_url + baseconfig.ulord_transaction  # ulord transaction webURL
@@ -155,10 +156,11 @@ class UlordHelper(object):
         self.ulord_querybalance = baseconfig.ulord_url + baseconfig.ulord_querybalance  # qurey balance webURL
         self.ulord_userbought = baseconfig.ulord_url + baseconfig.ulord_userbought # query the blog that user has bought
         self.ulord_userpublished = baseconfig.ulord_url + baseconfig.ulord_userpublished # query the blog that user has published
-        self.ulord_publisher_account = baseconfig.ulord_url + baseconfig.ulord_publishaccount # query publisher's billings
-        self.ulord_customer_account = baseconfig.ulord_url + baseconfig.ulord_customeraccount # query customer's billings
+        self.ulord_in = baseconfig.ulord_url + baseconfig.ulord_in # query income billings
+        self.ulord_out = baseconfig.ulord_url + baseconfig.ulord_out # query outcome billings
         self.ulord_billings = baseconfig.ulord_url + baseconfig.ulord_billings # query the user's billings
         self.ulord_published_num = baseconfig.ulord_url + baseconfig.ulord_publish_num # query the number of the blog that author has published.
+        self.ulord_view = baseconfig.ulord_url + baseconfig.ulord_view # add blog's view
         # TODO ulord other URL
 
     def post(self, url, data):
@@ -253,36 +255,44 @@ class UlordHelper(object):
         }
         return self.post(self.ulord_checkbought, data)
 
-    def queryuserpublished(self, wallet_username, page=1, num=10):
+    def queryuserpublished(self, wallet_username, page=1, num=10, category=2):
         # query user published from ulort platform
         data = {
             'author': wallet_username,
         }
+        if category != 2:
+            data.update({
+                'category':category
+            })
         temp_url = self.ulord_userpublished + "{0}/{1}/".format(page, num)
         return self.post(temp_url, data)
 
-    def queryuserbought(self, wallet_username, page=1, num=10):
+    def queryuserbought(self, wallet_username, page=1, num=10, category=2):
         # query user published from ulort platform
         data = {
             'customer': wallet_username,
         }
+        if category != 2:
+            data.update({
+                'category':category
+            })
         temp_url = self.ulord_userbought + "{0}/{1}/".format(page, num)
         return self.post(temp_url, data)
 
-    def querycustomerbillings(self, author, page=1, num=10):
+    def queryincomebillings(self, author, page=1, num=10):
         # get billings info
         data = {
-            'customer': author,
+            'username': author,
         }
-        temp_url = self.ulord_customer_account + "{0}/{1}/".format(page, num)
+        temp_url = self.ulord_in + "{0}/{1}/".format(page, num)
         return self.post(temp_url, data)
 
-    def queryauthorbillings(self, author, page=1, num=10):
+    def queryoutgobillings(self, author, page=1, num=10):
         # get billings info
         data = {
-            'author': author,
+            'username': author,
         }
-        temp_url = self.ulord_publisher_account + "{0}/{1}/".format(page, num)
+        temp_url = self.ulord_out + "{0}/{1}/".format(page, num)
         return self.post(temp_url, data)
 
     def querybillings(self, username):
@@ -297,6 +307,13 @@ class UlordHelper(object):
             'author': author
         }
         return self.post(self.ulord_published_num, data)
+
+    def addviews(self, dbID):
+        data = {
+            'id': dbID
+        }
+        return self.post(self.ulord_view, data)
+
 
 ulord_transmitter = UlordTransmitter()
 
