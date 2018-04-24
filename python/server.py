@@ -72,9 +72,11 @@ def regist():
             'errcode': 60100,
             'reason': "缺少参数"
         })
-    username = rsahelper.decrypt(rsahelper.privkey, username)
-    password = rsahelper.decrypt(rsahelper.privkey, password)
-
+    try:
+        username = rsahelper.decrypt(rsahelper.privkey, username)
+        password = rsahelper.decrypt(rsahelper.privkey, password)
+    except:
+        print("fronted doesn't encrypt")
     # if User.query.filter_by(username=username).first() is not None and User.query.filter_by(wallet=username).first() is not None:
     # delete modify username.It will make the publish error
     if User.query.filter_by(username=username).first() is not None and User.query.filter_by(
@@ -86,6 +88,10 @@ def regist():
         })
     # check cellphone and email
     if cellphone:
+        try:
+            cellphone = rsahelper.decrypt(rsahelper.privkey, cellphone)
+        except:
+            print("fronted doesn't encrypt")
         if not checker.isCellphone(cellphone):
             return jsonify({
                 'errcode': 60106,
@@ -168,8 +174,11 @@ def login():
             'errcode': 60100,
             'reason': "缺少参数"
         })
-    username = rsahelper.decrypt(rsahelper.privkey, username)
-    password = rsahelper.decrypt(rsahelper.privkey, password)
+    try:
+        username = rsahelper.decrypt(rsahelper.privkey, username)
+        password = rsahelper.decrypt(rsahelper.privkey, password)
+    except:
+        print("frontend doesn's encrypt")
     login_user = User.query.filter_by(username=username).first()
     if not login_user:
         # no user
@@ -213,15 +222,34 @@ def blog_publish():
             'reason':"缺少参数"
         })
     # TODO upload body to IPFS
+    start = time.time()
     try:
         body_txt = os.path.join(os.path.join(os.getcwd(), 'blogs'), '{}.txt'.format(title))
     except:
         print("Doesn't support chinese.Using uuid")
         body_txt = os.path.join(os.path.join(os.getcwd(), 'blogs'), '{}.txt'.format(str(uuid1())))
     if FileHelper.saveFile(body_txt, body):
+        end_save = time.time()
+        print({
+            'start':start,
+            'end_save':end_save,
+            'total':end_save - start
+        })
         file_hash = ulord_transmitter.upload(body_txt)
+        end_upload = time.time()
+        print({
+            'start':end_save,
+            'end_upload':end_upload,
+            'total':end_upload - end_save
+        })
         try:
             os.remove(body_txt)
+            end_remove = time.time()
+            print({
+                'start':end_upload,
+                'end_remove': end_remove,
+                'total':end_remove - end_upload
+            })
         except:
             print("Error rm {}".format(body_txt))
 
@@ -235,7 +263,14 @@ def blog_publish():
         data['price'] = amount
         data['pay_password'] = current_user.pay_password
         data['description'] = description
-        return jsonify(ulord_helper.publish(data))
+        result = ulord_helper.publish(data)
+        end_publish = time.time()
+        print({
+            'start':end_remove,
+            'end_publish':end_publish,
+            'total':end_publish - end_remove
+        })
+        return jsonify(result)
     else:
         return jsonify({
             'errcode': 60200,
@@ -303,7 +338,10 @@ def pay_blogs():
             'errcode':60100,
             'reason':"缺少参数"
         })
-    password = rsahelper.decrypt(rsahelper.privkey, password)
+    try:
+        password = rsahelper.decrypt(rsahelper.privkey, password)
+    except:
+        print("frontend doesn't encrypt")
     if not current_user.verify_password(password):
         return jsonify({
             'errcode': 60003,
@@ -418,6 +456,23 @@ def get_billings():
     return jsonify(ulord_helper.querybillings(current_user.wallet))
 
 
+@app.route('/user/billings/details',methods=['POST'])
+def get_billingsdetail():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    try:
+        page = request.json.get('page')
+        num = request.json.get('num')
+    except:
+        page = 1
+        num = 10
+    if not page:
+        page = 1
+    if not num:
+        num = 10
+    return jsonify(ulord_helper.querybillingsdetail(current_user.wallet, page, num))
+
 
 @app.route('/user/billings/income',methods=['POST'])
 def get_incomebillings():
@@ -473,7 +528,10 @@ def modify_userinfo():
             'reason': '缺少参数'
         })
     else:
-        password = rsahelper.decrypt(rsahelper.privkey, password)
+        try:
+            password = rsahelper.decrypt(rsahelper.privkey, password)
+        except:
+            print("frontend doesn't encrypt")
     if not current_user.verify_password(password):
         return jsonify({
             'errcode': 60003,
@@ -501,7 +559,10 @@ def modify_userinfo():
     #         })
     #     current_user.username = username
     if new_password:
-        new_password = rsahelper.decrypt(rsahelper.privkey, new_password)
+        try:
+            new_password = rsahelper.decrypt(rsahelper.privkey, new_password)
+        except:
+            print("frontend doesn't encrypt")
         current_user.hash_password(new_password)
     if cellphone:
         current_user.cellphone = cellphone
@@ -521,4 +582,11 @@ def modify_userinfo():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5050)
+    from tornado.wsgi import WSGIContainer
+    from tornado.httpserver import HTTPServer
+    from tornado.ioloop import IOLoop
+
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(5050)
+    IOLoop.instance().start()
+    # app.run(host='0.0.0.0', port=5050)

@@ -523,8 +523,8 @@ args:json
 
 ```python
 {
-	"page":1,
-	"num":1,
+    "page":1,
+    "num":1,
     "category":0
 }
 ```
@@ -611,8 +611,8 @@ args:json
 
 ```python
 {
-	"page":1,
-	"num":1,
+    "page":1,
+    "num":1,
     "category":0            
 }
 ```
@@ -640,6 +640,89 @@ return:
             }
         ],
         "total": 7
+    }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
+## List Billings detail 列出个人账单详细信息(收入和支出接口总和)
+
+URL:http://192.168.14.240:5000/user/billings/details
+
+method: post
+
+head:token
+
+args:json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|page|页数|否|
+|num|每页显示数|否|
+
+```python
+{
+    "page":1,
+    "num":6
+}
+```
+> 默认为每页10条数据，返回第一页
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "pages": 1,
+        "records": [
+            {  # 作为发布者, price正为资源收入
+                "author": "uuu",
+                "claim_id": "1eaeee8108d2ddeefebd5dc811c3722857e32165",
+                "create_timed": "2018-04-21T08:40:07.045958+00:00",
+                "customer": "935827234",
+                "price": 0.65255,
+                "title": "测试1111111",
+                "txid": "346bb03f63287b8c19ff0deee42ffe561d266beaeea80cff58f8098c4a4f42ab"
+            },
+            {  # 作为发布者, price负为广告支出
+                "author": "ttt",
+                "claim_id": "ca067e452618915fab2d33cdb6cecca83ae95659",
+                "create_timed": "2018-04-20T16:10:25.831104+00:00",
+                "customer": "uuu",
+                "price": -0.5,
+                "title": "df",
+                "txid": "d70c00b042b0fabd9279290f72af233d7e50f3092a0c341b05b3a7fc5cd784be"
+            },
+            {  #作为消费者, price正为资源支出
+                "author": "tttttttttttt",
+                "claim_id": "010d23be8ce1e23da9dad94c61618d1e0b484c77",
+                "create_timed": "2018-04-20T16:09:38.522716+00:00",
+                "customer": "uuu",
+                "price": 0.02,
+                "title": "the first blog",
+                "txid": "1b05ff6234eb95f5836afe6e8caf2617206d1f0d540c3798d8a2004f1ac0e299"
+            },
+            {  # 作为消费者, price负为广告收入
+                "author": "yyy",
+                "claim_id": "798aedf4fab2fa77a77b56528abe6e50afce37e6",
+                "create_timed": "2018-04-20T15:55:16.285238+00:00",
+                "customer": "uuu",
+                "price": -0.6,
+                "title": "666",
+                "txid": "851ecf55bd841322683a18a427fa69e6c6c49af8009c89ced6f0c1c12a620455"
+            }
+        ],
+        "total": 6
     }
 }
 ```
@@ -834,7 +917,7 @@ return:
 }
 ```
 
-## Add Blog View 增加博客访问量s
+## Add Blog View 增加博客访问量
 
 URL:http://192.168.14.240:5000/blog/views
 

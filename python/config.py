@@ -41,6 +41,7 @@ class BaseConfig(object):
         self.ulord_billings = "/transactions/publish/account/"
         self.ulord_publish_num = "/transactions/publish/count/"
         self.ulord_view = "/content/view/"
+        self.ulord_billings_detail = "/transactions/account/inout/"
         # {
         #     'username':用户名,
         #     'claim_id':博客ID

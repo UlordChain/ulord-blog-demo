@@ -159,6 +159,7 @@ class UlordHelper(object):
         self.ulord_in = baseconfig.ulord_url + baseconfig.ulord_in # query income billings
         self.ulord_out = baseconfig.ulord_url + baseconfig.ulord_out # query outcome billings
         self.ulord_billings = baseconfig.ulord_url + baseconfig.ulord_billings # query the user's billings
+        self.ulord_billings_detail = baseconfig.ulord_url + baseconfig.ulord_billings_detail # query the detail billings
         self.ulord_published_num = baseconfig.ulord_url + baseconfig.ulord_publish_num # query the number of the blog that author has published.
         self.ulord_view = baseconfig.ulord_url + baseconfig.ulord_view # add blog's view
         # TODO ulord other URL
@@ -293,6 +294,14 @@ class UlordHelper(object):
             'username': author,
         }
         temp_url = self.ulord_out + "{0}/{1}/".format(page, num)
+        return self.post(temp_url, data)
+
+    def querybillingsdetail(self, author, page=1, num=10):
+        # query the billings detail.Union the income and outgo
+        data = {
+            'username':author,
+        }
+        temp_url = self.ulord_billings_detail + '{0}/{1}/'.format(page, num)
         return self.post(temp_url, data)
 
     def querybillings(self, username):
