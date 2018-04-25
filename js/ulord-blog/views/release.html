@@ -25,33 +25,67 @@
                 <a class="pull-right" href="/home">返回主页</a>
             </div>
             <div class="panel-body">
+                <div>
+                    <button class="publish-btn publish-btn-active article-btn">发布文章</button>
+                    <button class="publish-btn ads-btn">发布广告</button>
+                </div>
                 <form action="" class="release-form">
                     <input type="text" placeholder="标题" class="release-title" id="title">
                     <textarea class="release-title" rows="3" placeholder="简述" id="intro"></textarea>
                 </form>
                 <div id="editor">
                 </div>
-                <div class="demo">
-                    <span style="vertical-align: middle; display:inline-block">新增标签：</span>
-                    <div class="plus-tag tagbtn clearfix" id="myTags"></div>
-                    <div class="plus-tag-add">
-                        <form id="" action="" class="login">
-                            <ul class="Form FancyForm" style="margin-top: 10px;">
-                                <li>
-                                    <input id="" name="" type="text" class="stext" maxlength="20" />
-                                    <label>输入标签</label>
-                                    <span class="fff"></span>
-                                </li>
-                                <li>
-                                    <button type="button" class="Button RedButton Button18" style="font-size:14px;">添加标签</button>
-                                </li>
-                            </ul>
-                        </form>
-                    </div>
-                    <!--plus-tag-add end-->
+                <div class="demo" class="col-md-12 ">
+	
+                        <div class="plus-tag tagbtn clearfix" id="myTags"></div>
+                    
+                        <div class="plus-tag-add">
+                            <form id="" action="" class="login">
+                                <ul class="Form FancyForm">
+                                    <li>
+                                        <span class="label" style="color: #000">我的标签</span>
+                                        <input id="" name="" type="text" class="stext" maxlength="20" />
+                                        <label>标签</label>
+                                        <span class="fff"></span>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="Button RedButton Button18" style="font-size:16px;">新增标签</button>
+                                        <a href="javascript:void(0);">推荐标签</a>
+                                    </li>
+                                </ul>
+                            </form>
+                        </div><!--plus-tag-add end-->
+                        
+                        <div id="mycard-plus" style="display:none;">
+                            <div class="default-tag tagbtn">
+                                <div class="clearfix">
+                                    <a value="-1" title="Travel" href="javascript:void(0);"><span>军事</span><em></em></a>
+                                    <a value="-1" title="Internet" href="javascript:void(0);"><span>经济</span><em></em></a>
+                                    <a value="-1" title="it" href="javascript:void(0);"><span>旅游</span><em></em></a>
+                                    <a value="-1" title="French" href="javascript:void(0);"><span>技术</span><em></em></a>
+                                    <a value="-1" title="English" href="javascript:void(0);"><span>感想</span><em></em></a>
+                                    <a value="-1" title="JAVA" href="javascript:void(0);"><span>随笔</span><em></em></a>
+                                    <a value="-1" title="Photograph" href="javascript:void(0);"><span>笔记</span><em></em></a>
+                                    <a value="-1" title="Sculpture" href="javascript:void(0);"><span>java</span><em></em></a>
+                                    <a value="-1" title="Drawing" href="javascript:void(0);"><span>paython</span><em></em></a>
+                                    <a value="-1" title="Jazziness" href="javascript:void(0);"><span>javasrcipt</span><em></em></a>
+                                    <a value="-1" title="Running" href="javascript:void(0);"><span>php</span><em></em></a>
+                                    <a value="-1" title="PHP" href="javascript:void(0);"><span>PHP</span><em></em></a>
+                                    <a value="-1" title="Dreamweaver" href="javascript:void(0);"><span>Dreamweaver</span><em></em></a>
+                                    <a value="-1" title="Shopping" href="javascript:void(0);"><span>Shopping</span><em></em></a>
+                                    <a value="-1" title="Writing" href="javascript:void(0);"><span>Writing</span><em></em></a>
+                                    <a value="-1" title="Diving" href="javascript:void(0);"><span>Diving</span><em></em></a>
+                                    <a value="-1" title="Basketball" href="javascript:void(0);"><span>Basketball</span><em></em></a>
+                                    <a value="-1" title="Reading" href="javascript:void(0);"><span>Reading</span><em></em></a>                   
+                                </div>
+                                
+                            
+                        </div><!--mycard-plus end-->
+                            
                 </div>
                 <input type="number" placeholder="定价" class="release-title" id="price">
-                <button class="btn btn-default" style="padding: 14px 40px; margin: 12px auto 0; display: block; background-color: rgb(255, 152, 0); color: #fff" id="sub">发布</button>
+                <p class="ads-tip">提示：发布广告定价为每被浏览一篇需支出的费用</p>
+                <input class="btn btn-default" type="button" value="发布文章" style="padding: 14px 40px; margin: 12px auto 0; display: block; background-color: rgb(255, 152, 0); color: #fff" id="sub">
             </div>
         </div>
     </div>
@@ -65,8 +99,12 @@
         editor.create()
         $('#sub').on('click', function () {
             console.log('开始提交');
+            var amount = $('#price').val();
+            if($('.ads-btn').hasClass('publish-btn-active')){
+                amount = -amount;
+           } 
             var tags = [];
-            $('.plus-tag span').each(function() {
+            $('.plus-tag a').each(function() {
                 tags.push($(this).text());
             })
             $.ajax({
@@ -76,7 +114,7 @@
                 data: JSON.stringify({
                     title: $('#title').val(),
                     body: editor.txt.html(),
-                    amount: $('#price').val(),
+                    amount: amount,
                     tag: tags,
                     description: $('#intro').val()
                 })
@@ -96,7 +134,18 @@
             })
             var index = layer.load(0, {shade: false});
         })
-       
+        $('.ads-tip').hide();
+       $('.publish-btn').on('click',function() {
+           $(this).addClass('publish-btn-active');
+           $(this).siblings().removeClass('publish-btn-active');
+           if($('.article-btn').hasClass('publish-btn-active')){
+               $('#sub').val('发布文章');
+               $('.ads-tip').hide();
+           } else {
+               $('#sub').val('发布广告');
+               $('.ads-tip').show();
+           }
+       })
         
     
     </script>

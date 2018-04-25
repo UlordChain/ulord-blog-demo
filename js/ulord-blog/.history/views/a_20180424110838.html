@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jsencrypt/2.3.1/jsencrypt.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="user">
+    <input type="text" id="pwd">
+    <textarea name="" id="bb" cols="30" rows="10"></textarea>
+    <button id="submit">提交</button>
+    <button id="get">获取公匙</button>
+    <script>
+        // $('#get').on('click', function () {
+        //     $.ajax({
+        //         url: 'http://192.168.14.40:5000/user/password',
+        //         type: 'GET',
+        //     }).done(function (res) {
+        //         console.log(res.result.pubkey);
+        //         $('#bb').val(res.result.pubkey);
+        //         console.log($('#bb').val().length)
+        //     })
+        // })
+        // $(function () {
+
+        //     // Run a quick encryption/decryption when they click.
+        //     $('#submit').click(function () {
+
+        //         // Encrypt with the public key...
+        //         var encrypt = new JSEncrypt();
+        //         encrypt.setPublicKey($('#bb').val());
+        //         encrypt.getPublicKey();
+
+        //         console.log($('#bb').val())
+        //         var encrypted = encrypt.encrypt($('#pwd').val());
+        //         console.log(encrypted);
+        //         // $.ajax({
+        //         //     url: 'http://192.168.14.40:5000/user/password',
+        //         //     type: 'POST',
+        //         //     contentType: "application/json",
+        //         //     data: JSON.stringify({
+        //         //         password: encrypted
+        //         //     })
+        //         // })
+        //     });
+        // });
+
+
+// function encrypt (needEncrypt) {
+//     var getPublicKey = new Promise(function (reslove, reject) {
+//         $.ajax({
+//             url: 'http://192.168.14.40:5000/user/password',
+//             type: 'GET'
+//         }).done(function (res) {
+//             if (res.errcode == 0) {
+//                console.log(res);
+//             } else {
+//                 reject(res);
+//             }
+//         })
+//     });
+//     // getPublicKey.then(function(res){
+//     //     var encrypt = new JSEncrypt();
+//     //     encrypt.setPubliKey(res.result.pubkey);
+//     //     needEncrypt = encrypt.encrypt(needEncrypt);
+//     //     return needEncrypt;
+//     // }, function() {
+//     //     console.log('加密出错');
+//     // })
+// }
+// console.log(encrypt(111111));
+        $.ajax({
+            url: 'http://192.168.14.40:5000/user/password',
+            type: 'GET',
+            dataType: "json",
+            headers: {
+                
+            }
+        }).done(function (res) {
+            console.log(res);
+        })
+   
+
+
+        // $('#get').on('click', function () {
+        //     var getPublicKey = function () {
+        //         return new Promise(function (reslove, reject) {
+        //             $.ajax({
+        //                 url: 'http://192.168.14.40:6000/user/password',
+        //                 type: 'GET',
+        //             }).done(function (res) {
+        //                 if(res.errcode == 0) {
+        //                     reslove(res);
+        //                 } else {
+        //                     reject(res);
+        //                 }
+        //             })
+        //         })
+        //     }
+        //     var sendPriKey = function (encrypted) {
+        //         return new Promise(function (reslove, reject) {
+        //             $.ajax({
+        //                 url: 'http://192.168.14.40:5000/user/password',
+        //                 type: 'POST',
+        //                 contentType: 'application/json',
+        //                 data: JSON.stringify({
+        //                     password: encrypted
+        //                 })
+        //             }).done(function (res) {
+        //                 if (res.errcode == 0) {
+        //                     reslove(res);
+        //                 } else {
+        //                     reject(res);
+        //                 }
+        //             })
+        //         })
+        //     }
+        //     getPublicKey().then(function(res) {
+        //         var encrypt = new JSEncrypt();
+        //         console.log(res.result.pubkey);
+        //         encrypt.setPublicKey(res.result.pubkey);
+        //         var encrypted = encrypt.encrypt($('#pwd').val());
+        //         console.log($('#pwd').val());
+        //         console.log(encrypted);
+        //         sendPriKey(encrypted).then(function(){
+        //             console.log('发送成功');
+        //         }, function () {
+        //             console.log('发送失败')
+        //         })
+        //     }, function(res){
+        //         console.log('加密出错了')
+        //     })
+        // })
+        
+    </script>
+</body>
+
+</html>
