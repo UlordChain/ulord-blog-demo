@@ -183,6 +183,33 @@ return:
 }
 ```
 
+## Logout    登出
+
+URL:http://192.168.14.240:5000/user/logout
+
+method: post，get
+
+head:token
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": "success"
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+
 ## Publish  发布博客
 
 URL:http://192.168.14.240:5000/blog/publish

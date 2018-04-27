@@ -91,13 +91,17 @@ def regist():
         try:
             cellphone = rsahelper.decrypt(rsahelper.privkey, cellphone)
         except:
-            print("fronted doesn't encrypt")
+            print("frontend doesn't encrypt cellphone")
         if not checker.isCellphone(cellphone):
             return jsonify({
                 'errcode': 60106,
                 'reason': '无效的手机号'
             })
     if email:
+        try:
+            email = rsahelper.decrypt(rsahelper.privkey, email)
+        except:
+            print("frontend doesn't encrypt email")
         if not checker.isMail(email):
             return jsonify({
                 'errcode': 60105,
@@ -111,13 +115,11 @@ def regist():
     regist_result = ulord_helper.regist(user.wallet, user.pay_password)
     if regist_result.get("errcode") != 0:
         return jsonify(regist_result)
-
+    # 不能移动，先判断再提交。否则验证失败可能也会提交
     if cellphone:
         user.cellphone = cellphone
     if email:
         user.email = email
-    if baseconfig.activity:
-        user.balance = baseconfig.amount
 
     token = str(uuid1())
     user.token = token
@@ -202,6 +204,19 @@ def login():
         'result':{
             "token":token
         }
+    })
+
+
+@app.route('/user/logout',methods=['POST','GET'])
+def logout():
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    current_user.timestamp = int(time.time()) - 1 # auth_login_require check the timestamp
+    return jsonify({
+        'errcode': 0,
+        'reason': "success",
+        'result': "success"
     })
 
 
@@ -339,7 +354,9 @@ def pay_blogs():
             'reason':"缺少参数"
         })
     try:
+        print("current password:{}".format(password))
         password = rsahelper.decrypt(rsahelper.privkey, password)
+        print("decrypt password:{}".format(password))
     except:
         print("frontend doesn't encrypt")
     if not current_user.verify_password(password):
@@ -531,7 +548,7 @@ def modify_userinfo():
         try:
             password = rsahelper.decrypt(rsahelper.privkey, password)
         except:
-            print("frontend doesn't encrypt")
+            print("frontend doesn't encrypt password")
     if not current_user.verify_password(password):
         return jsonify({
             'errcode': 60003,
@@ -539,17 +556,26 @@ def modify_userinfo():
         })
     # check cellphone and email
     if cellphone:
+        try:
+            cellphone = rsahelper.decrypt(rsahelper.privkey, cellphone)
+        except:
+            print("frontend doesn't encrypt cellphone")
         if not checker.isCellphone(cellphone):
             return jsonify({
                 'errcode': 60106,
                 'reason': '无效的手机号'
             })
     if email:
+        try:
+            email = rsahelper.decrypt(rsahelper.privkey, email)
+        except:
+            print("frontend doesn't encrypt email")
         if not checker.isMail(email):
             return jsonify({
                 'errcode': 60105,
                 'reason': '无效的邮箱'
             })
+
     # if username:
     #     if (User.query.filter_by(username=username).first() is not None) & (User.query.filter_by(wallet=username).first() is not None):
     #         # existing user
@@ -562,8 +588,9 @@ def modify_userinfo():
         try:
             new_password = rsahelper.decrypt(rsahelper.privkey, new_password)
         except:
-            print("frontend doesn't encrypt")
+            print("frontend doesn't encrypt new_password")
         current_user.hash_password(new_password)
+    # 不能移动，先判断再提交。否则验证失败可能也会提交
     if cellphone:
         current_user.cellphone = cellphone
     if email:

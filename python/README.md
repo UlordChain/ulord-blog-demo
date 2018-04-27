@@ -60,9 +60,9 @@ python server.py
 ## TODO
 - [x] add TODO list
 - [x] add login
-- [ ] add logout
+- [x] add logout
 - [x] add config
-- [ ] add encryption
+- [x] add encryption
 - [x] add upload
 - [x] linux environment
 - [ ] add unit test
