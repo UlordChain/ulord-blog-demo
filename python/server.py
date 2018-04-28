@@ -170,6 +170,8 @@ def activity():
 def login():
     username = request.json.get('username')
     password = request.json.get('password')
+    print(username)
+    print(password)
     if username is None or password is None:
         # missing arguments
         return jsonify({
@@ -178,6 +180,7 @@ def login():
         })
     try:
         username = rsahelper.decrypt(rsahelper.privkey, username)
+        # print(username)
         password = rsahelper.decrypt(rsahelper.privkey, password)
     except:
         print("frontend doesn's encrypt")
@@ -614,6 +617,6 @@ if __name__ == '__main__':
     from tornado.ioloop import IOLoop
 
     http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(5050)
+    http_server.listen(5000)
     IOLoop.instance().start()
     # app.run(host='0.0.0.0', port=5050)

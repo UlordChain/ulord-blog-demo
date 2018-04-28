@@ -1,4 +1,6 @@
-# Ulord[中文](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README_ch.md)
+# Ulord
+
+[中文](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README_ch.md)
 
 Use ulord platform to create a single blog.
 
@@ -67,5 +69,8 @@ python server.py
 - [x] linux environment
 - [ ] add unit test
 - [ ] docker environment
+
+## API
+This project serveres for the front end.API document is [here](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/doc/API_document.md)
 
 

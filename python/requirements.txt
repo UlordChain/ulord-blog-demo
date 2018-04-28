@@ -1,10 +1,13 @@
+backports-abc==0.5
 certifi==2018.1.18
 chardet==3.0.4
 click==6.7
+coverage==4.5.1
 Flask==0.12.2
 Flask-Cors==3.0.3
 Flask-HTTPAuth==3.2.3
 Flask-SQLAlchemy==2.3.2
+futures==3.2.0
 idna==2.6
 ipfsapi==0.4.2.post1
 itsdangerous==0.24
@@ -15,7 +18,9 @@ pyasn1==0.4.2
 pycryptodome==3.6.1
 requests==2.18.4
 rsa==3.4.2
+singledispatch==3.4.0.3
 six==1.11.0
 SQLAlchemy==1.2.6
+tornado==5.0.2
 urllib3==1.22
 Werkzeug==0.14.1

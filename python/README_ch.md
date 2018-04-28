@@ -1,4 +1,6 @@
-﻿# 优得[英文版](https://github.com/UlordChain/ulord-blog-demo/tree/master/python)
+﻿# 优得
+
+[English](https://github.com/UlordChain/ulord-blog-demo/tree/master/python)
 
 一个轻量级的博客，将文章上传至ulord平台并进行定价，其他用户付费查看。所有交易信息均可通过ulord区块浏览器查阅
 
@@ -68,3 +70,6 @@ python server.py
 - [x] 适配linux环境
 - [ ] 添加单元测试
 - [ ] docker 环境
+
+## 接口
+这个项目只是为前端服务.接口文档看[这里](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/doc/API_document.md)
