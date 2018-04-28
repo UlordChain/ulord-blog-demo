@@ -2,6 +2,35 @@
 
 This is a document of blog web's API.It services for front-end.
 
+## Table of Contents 目录 
+
+- [Get Publickey 获取公钥](#get-publickey-获取公钥)
+- [test encrypt 测试加密](#test-encrypt-测试加密)
+- [Register 注册](#Register-注册)
+- [Pay To User 优惠活动，给新注册的用户发10个ulord](#pay-to-user-优惠活动给新注册的用户发10个ulord)
+- [Login 登录](#login----登录)
+- [Install Go](#logout----登出)
+- [Publish 发布博客](#publish--发布博客)
+- [List All Blog 获取博客](#list-all-blog--获取博客)
+- [check isbought 检查博客是否付费](#check-isbought--检查博客是否付费)
+- [Pay blogs 支付博客](#pay-blogs-支付博客)
+- [Pay ADs 支付广告](#pay-ads-支付广告)
+- [List Personal Info 列出个人信息](#list-personal-info-列出个人信息)
+- [List Personal Balance 列出个人余额](#list-personal-balance-列出个人余额)
+- [List Personal Published 列出个人发布过的资源](#list-personal-published-列出个人发布过的资源)
+- [List Personal Published num 列出个人发布过的资源数量](#list-personal-published-num-列出个人发布过的资源数量)
+- [List Personal Bought 列出个人购买过的资源](#list-personal-bought-列出个人购买过的资源)
+- [List Billings detail 列出个人账单详细信息(收入和支出接口总和)](#list-billings-detail-列出个人账单详细信息收入和支出接口总和)
+- [List Billings 列出个人账单](#list-billings-列出个人账单)
+- [List User's Outgos 列出个人支出](#list-users-outgos-列出个人支出)
+- [List User's Incomes 列出个人收入账单](#list-users-incomes-列出个人收入账单)
+- [Add Blog View 增加博客访问量](#add-blog-view-增加博客访问量)
+- [Modify Personal Info 修改个人信息](#modify-personal-info-修改个人信息)
+- [~~Modify Blog Info 修改文章信息~~](#modify-blog-info-修改文章信息)
+- [~~Record Blog 添加博客访问~~](#record-blog-添加博客访问)
+- [附录A:错误码对照表](#附录a错误码对照表)
+
+
 ## Get Publickey 获取公钥
 
 URL:http://192.168.14.240:5000/user/password
@@ -29,7 +58,7 @@ return:
 }
 ```
 
-## <font color=#C0C0C0>test encrypt 测试加密</font>
+## test encrypt 测试加密
 
 URL:http://192.168.14.240:5000/user/password
 
@@ -1143,8 +1172,8 @@ return:
     60002:{'errcode':60002,'reason':'用户不存在.'},
     60003:{'errcode':60003,'reason':'密码错误.'},
     60004:{'errcode':60001,'reason':'邮箱已存在.'},
-    60005:{'errcode':60005,'reason':'数据库提交失败.',
-    60006:{'errcode':60006,'reason':'作者已失效.'}
+    60005:{'errcode':60005,'reason':'数据库提交失败.'},
+    60006:{'errcode':60006,'reason':'作者已失效.'},
     # 2. 请求参数验证相关
     60100:{'errcode':60100,'reason':'缺少参数.'},
     60101:{'errcode':60101,'reason':'参数长度不符.'},
@@ -1152,10 +1181,10 @@ return:
     60103:{'errcode':60103,'reason':'需要token.'},
     60104:{'errcode':60104,'reason':'无效的token.'},
     60105:{'errcode':60105,'reason':'无效的邮箱.'},
-    60106:{'errcode':60106,'reason':'无效的手机号.'},    
+    60106:{'errcode':60106,'reason':'无效的手机号.'},
     # 3.文件操作
     60200:{'errcode':60200,'reason':'上传文件失败.'},
-    # 3.活动相关
+    # 4.活动相关
     60300:{'errcode':60200,'reason':'活动取消.'},
     60301:{'errcode':60301,'reason':'已赠送.'},
 }
