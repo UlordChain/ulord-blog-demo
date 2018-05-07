@@ -1,16 +1,20 @@
-# Ulord
+# Ulord-blog-demo
 
 [中文](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README_ch.md)
 
 Use ulord platform to create a single blog.
 
 ## Table of Contents
+- [Instructions](#Instructions)
 - [Features](#Features)
 - [install](#install)
   - [install python and pip](#install-python-and-pip)
 - [run](#run)
 - [TODO](#todo)
 - [API](#api)
+
+## Instructions
+This module is ulord-blog-demo's rear-end,completed by python2.7.It saves the title,price,description and other infos about blog into the Ulord block chain.The content of the blog will upload into the UDFS.The content of the blog which was saved into the Ulord block chain is a UDFS hash.Some queries will return it and then the font-ender can use it to show or download.
 
 ## Features
 > * resource pricing

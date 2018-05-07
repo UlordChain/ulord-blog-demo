@@ -329,7 +329,7 @@ return:
                 "content_type": ".txt",
                 "create_timed": "2018-04-12T15:47:34.446858+00:00",
                 "currency": "ULD",
-                "des": "这是使用IPFS和区块链生成的第2篇博客的描述信息",
+                "des": "这是使用UDFS和区块链生成的第2篇博客的描述信息",
                 "id": 5,
                 "price": 1.3,
                 "status": 1,
@@ -486,7 +486,7 @@ return:
     }
 }
 
-# 支付成功返回文件的hash值，通过IPFS接口获取数据
+# 支付成功返回文件的hash值，通过UDFS接口获取数据
 ```
 
 失败
