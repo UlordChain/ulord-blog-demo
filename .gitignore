@@ -2,8 +2,8 @@
 *.db
 *.sqlite
 
-# company
-*.txt
+# config
+/python/config
 
 # test
 /python/test
@@ -16,6 +16,7 @@
 
 # pycharm
 /python/.idea
+/.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

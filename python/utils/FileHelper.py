@@ -109,7 +109,8 @@ def readFile(filepath):
 
 def getRootPath():
     # get project root path
-    return os.path.split(os.getcwd())[0]
+    # return os.path.split(os.getcwd())[0]
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 if __name__ == '__main__':
