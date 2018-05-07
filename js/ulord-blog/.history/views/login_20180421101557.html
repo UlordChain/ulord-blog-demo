@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/js/layer-v3.1.1/layer/theme/default/layer.css">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/layer-v3.1.1/layer/layer.js"></script>
+</head>
+
+<body>
+
+    <form class="login-form" id="gg" role="form" onsubmit="return false">
+        <fieldset>
+            <div class="panel panel-default" style="text-align: center">
+                <div class="page-header">
+                    <h1 class="text-center">Ulord博客系统</p>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </span>
+                            <input type="text" class="form-control" name="username" placeholder="请输入用户名" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-lock"></span>
+                            </span>
+                            <input type="password" class="form-control" name="password" placeholder="请输入密码" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <input type="button" class="btn btn-info" id="login0" value="登录" onclick="login()" style="width: 100%;">
+                    </div>
+                    <div class="form-group">
+                        <a href="/register" class="btn-a" id="register0">注册即送10Ulord币！</a>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+    <script>
+        // function check() {
+           
+        //         if ('<%=code%>' == 0) {
+                  
+        //                 window.location.href = '/home';
+                    
+                    
+        //         } else if ('<%=code%>' == 60002) {
+                    
+        //             layer.msg('用户不存在', {
+        //                 time: 1000
+        //             })
+                  
+        //         } else if ('<%=code%>' == 60003) {
+                 
+        //             layer.msg('密码错误', {
+        //                 time: 1000
+        //             })
+        //         } else {
+                    
+        //             layer.msg('登录失败', {
+        //                 time: 1000
+        //             })
+        //         }
+        // }
+        $()
+        function login() {
+            var formParam = $('.login-form').serializeObject()
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(formParam),
+                success: function(res) {
+                    console.log(res);
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

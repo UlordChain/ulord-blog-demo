@@ -12,7 +12,7 @@
     "express": "~4.16.0",
     "express-session": "^1.15.6",
     "http-errors": "~1.6.2",
-    "ipfs-api": "^20.0.0",
+    "ipfs-api": "^20.0.1",
     "morgan": "~1.9.0",
     "node-gyp": "^3.6.2",
     "request": "^2.85.0"

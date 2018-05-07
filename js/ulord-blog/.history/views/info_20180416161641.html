@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/js/layer-v3.1.1/layer/theme/default/layer.css">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/layer-v3.1.1/layer/layer.js"></script>
+    <script src="https://unpkg.com/ipfs-api/dist/index.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3>个人中心</h3>
+                <a class="pull-right" href="/home">返回列表</a>
+                <a href="/release" class="pull-right">发布</a>
+            </div>
+            <% if(!error) { %>
+            <div class="person_info_con">
+                <a name="M_base"></a>
+                <dl class="person-photo">
+                    <dt>
+                        <a href="javascript:;">
+                            <img src="/img/head.jpg" class="header">
+                            <span class="edit_person_pic"></span>
+                        </a>
+                    </dt>
+                </dl>
+                <dl class="person-info">
+                    <dt class="person-nick-name">
+                        <span><%= data.msg.username %></span>
+                    </dt>
+                    <dd class="person-detail">
+                        <% if (data.msg.Email) { %>
+                            <span class="info_null"><%= data.msg.Email %></span>
+                        <% } else if (!data.msg.Email) { %>
+                            <span class="info_null">未填写邮箱</span>
+                        <% } %> 
+                        <span>|</span>
+                        <% if (data.msg.cellphone) { %>
+                            <span class="info_null"><%= data.msg.cellphone %></span>
+                        <% } else if (!data.msg.Email) { %>
+                            <span class="info_null">未填写手机号码</span>
+                        <% } %>
+                    </dd>
+                    <dd style="margin: 10px 0px">
+                        <div class="person-status clearfix">
+                            <div class="status">
+                                <span>
+                                    <a href="javascript:;" class="cb"><%= data.msg.balance %></a>
+                                    <i>ULD币</i>
+                                </span>
+                                <span class="medals">
+                                    <div class="wraper" style="width: auto"></div>
+                                </span>
+                            </div>
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+            <div class="persion_section">
+                <div class="aboutMe" style="display: block">
+                        <ul id="myTab" class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#blog" data-toggle="tab">
+                                    我发布的博客
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#payed" data-toggle="tab">
+                                    已付费的博客
+                                </a>
+                            </li>   
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+                            <div class="tab-pane fade in active" id="blog">
+                                <% data.msg.publish_blogs.forEach(function(item, index) { %>   
+                                    <div class="item-blog">
+                                        <div class="item">
+                                            <div>
+                                                <div>
+                                                    <img src="/img/head.jpg" alt="" class="head-img">
+                                                    <div class="author"><%= data.msg.username %></div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="item-title" cid=<%= item.body %>><%= item.title %></h4>
+                                                </div>
+                                            </div>
+                                            <div class="item-main">
+                                                <p class="intro"><%= item.description %></p>
+                                            </div>
+                                            <div class="item-tips-wrap">
+                                                <% if (item.tag) { %>
+                                                <% item.tag.forEach(function(tag, index) { %>    
+                                                    <span class="item-tag"><%= tag %></span>
+                                                    <% }) %>
+                                                <% } %>
+                                                    <span>阅读量:10次</span>
+                                                    <span class="price"><%= item.amount %>ULD</span>
+                                                <% if(item.hash) { %>
+                                                    <span>已付费</span>
+                                                    <span style="opacity: 0;" class="hash"><%= item.hash %></span>
+
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                <% }) %>
+                            </div>
+                            <div class="tab-pane fade" id="payed">
+                                <% data.msg.read_blogs.forEach(function(item, index) { %>   
+                                    <div class="item-blog">
+                                        <div class="item">
+                                            <div>
+                                                <div>
+                                                    <img src="/img/head.jpg" alt="" class="head-img">
+                                                    <div class="author"><%= data.msg.username %></div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="item-title" cid=<%= item.body %>><%= item.title %></h4>
+                                                </div>
+                                            </div>
+                                            <div class="item-main">
+                                                <p class="intro"><%= item.description %></p>
+                                            </div>
+                                            <div class="item-tips-wrap">
+                                                <% if (item.tag) { %>
+                                                <% item.tag.forEach(function(tag, index) { %>    
+                                                    <span class="item-tag"><%= tag %></span>
+                                                    <% }) %>
+                                                <% } %>
+                                                    <span>阅读量:10次</span>
+                                                    <span class="price"><%= item.amount %>ULD</span>
+                                                <% if(item.hash) { %>
+                                                    <span>已付费</span>
+                                                    <span style="opacity: 0;" class="hash"><%= item.hash %></span>
+
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                <% }) %>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var ipfs = window.IpfsApi('114.67.37.2', '20418')
+        ipfs.id()
+            .then((id) => {
+                console.log('my id is: ', id)
+            })
+            .catch((err) => {
+                console.log('Fail: ', err)
+            })
+            function Utf8ArrayToStr(array) {
+                var out, i, len, c;
+                var char2, char3;
+
+                out = "";
+                len = array.length;
+                i = 0;
+                while(i < len) {
+                c = array[i++];
+                switch(c >> 4)
+                { 
+                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+                    // 0xxxxxxx
+                    out += String.fromCharCode(c);
+                    break;
+                case 12: case 13:
+                    // 110x xxxx   10xx xxxx
+                    char2 = array[i++];
+                    out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                    break;
+                case 14:
+                    // 1110 xxxx  10xx xxxx  10xx xxxx
+                    char2 = array[i++];
+                    char3 = array[i++];
+                    out += String.fromCharCode(((c & 0x0F) << 12) |
+                                ((char2 & 0x3F) << 6) |
+                                ((char3 & 0x3F) << 0));
+                    break;
+                }
+                }
+
+                return out;
+            } 
+        $('.item-title').on('click', function () {
+            var author = $(this).parents('.item').find('.author').text();
+            var amount = parseInt($(this).parents('.item').find('.price').text());
+            var title = $(this).text();
+            ipfs.files.get($(this).attr('cid'),function (err,files) {
+                if (err || typeof files == "undefined") {
+                } else {
+                    var array = Array.from(files[0].content)
+                    window.sessionStorage.title = title;
+                    window.sessionStorage.amount = amount;
+                    window.sessionStorage.author = author;
+                    window.sessionStorage.content = Utf8ArrayToStr(array);
+                    window.location.href = '/details'
+                    console.log('很重要', Utf8ArrayToStr(array));
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

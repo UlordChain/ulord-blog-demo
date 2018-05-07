@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/js/layer-v3.1.1/layer/theme/default/layer.css">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/layer-v3.1.1/layer/layer.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <form class="register-form" role="form" method="post" action="/register" onsubmit="return false">
+        <fieldset>
+            <div class="panel panel-default">
+                <div class="page-header">
+                    <h1 class="text-center">Ulord博客系统</h1>
+                </div>
+                <div class="panel-body m15">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </span>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-lock"></span>
+                            </span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-phone"></span>
+                            </span>
+                            <input type="text" class="form-control" id="phonenumber" name="phonenumber" placeholder="电话">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-briefcase"></span>
+                            </span>
+                            <input type="text" class="form-control" id="emial" name="email" placeholder="Email">
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                            <input type="button" class="btn btn-info btn-a" id="register1" value="注册" style="width: 100%" onclick="register()">
+                        </div>
+                    <div class="form-group text-center">
+                        <a href="/login" class="" id="login1"><span style="color: #000; margin-right: 4px;">已有账号</span>登录</a>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+    <script>
+
+        jQuery.prototype.serializeObject = function () {
+            var obj = new Object();
+            $.each(this.serializeArray(), function (index, param) {
+                if (!(param.name in obj)) {
+                    obj[param.name] = param.value;
+                }
+            });
+            return obj;
+        };
+        function register() {
+            var index = layer.load(0, {shade: false});
+            var formParam = $('.register-form').serializeObject()
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(formParam),
+                success: function (res) {
+                    console.log(res);
+                    if(res.code == 0) {
+                        $.ajax({
+                            url: '/activity',
+                            type: 'GET',
+                            dataType: 'application/json',
+                        })
+                    } else if (res.code == 60000) {
+                        layer.close(index);
+                        layer.msg('用户已存在',{time: 1000})
+                    } else if (res.code == 60001) {
+                        layer.close(index);
+                        layer.msg('邮箱已存在',{time: 1000})
+                    } else if (res.code == 60005) {
+                        layer.close(index);
+                        layer.msg('数据库提交失败',{time: 1000})
+                    }else if (res.code == 60103) {
+                        layer.close(index);
+                        layer.msg('需要token',{time: 1000})
+                    }else if (res.code == 60104) {
+                        layer.close(index);
+                        layer.msg('无效的token',{time: 1000})
+                    }else if (res.code == 60105) {
+                        layer.close(index);
+                        layer.msg('无效的邮箱',{time: 1000})
+                    }else if (res.code == 60106) {
+                        layer.close(index);
+                        layer.msg('无效的手机号',{time: 1000})
+                    }else {
+                        layer.close(index);
+                        layer.msg('注册失败',{time: 1000})
+                    }
+                }
+            })
+        }
+        
+    </script>
+</body>
+
+</html>
