@@ -2,6 +2,8 @@
 *.db
 *.sqlite
 
+# config
+/python/config
 
 # test
 /python/test
