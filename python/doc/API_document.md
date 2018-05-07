@@ -3,7 +3,7 @@
 This is a document of blog web's API.It services for front-end.
 
 ## Table of Contents 目录 
-
+- [Introudction 说明](#getIntroudction-说明)
 - [Get Publickey 获取公钥](#get-publickey-获取公钥)
 - [test encrypt 测试加密](#test-encrypt-测试加密)
 - [Register 注册](#Register-注册)
@@ -30,12 +30,33 @@ This is a document of blog web's API.It services for front-end.
 - [~~Record Blog 添加博客访问~~](#record-blog-添加博客访问)
 - [附录A:错误码对照表](#附录a错误码对照表)
 
+## Introudction 说明
+
+此篇API文档是ulord博客演示系统后台，由python2.7完成。部分API需要在头部添加token才可调用，调用数据为json格式，成功返回0，错误返回错误码。具体格式如下：
+
+成功
+```python
+{
+    "errcode": 0,#状态码
+    "reason": "success",#成功
+    "result": ""#返回结果，涵盖一些所需要的返回值
+}
+```
+
+失败
+```python
+{
+    "errcode": 400~60301,# 错误码，详见附录A
+    "reason": "some reason"# 错误原因，详见附录A
+}
+```
+加密部分采用非对称加密，前端请求公钥接口获得公钥加密数据发送到后端，后端进行解密。
+
+前端加密部分代码详看[这里](https://github.com/UlordChain/ulord-blog-demo/blob/master/js/ulord-blog/views/login.html#L54),后台解密代码详看[这里](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/server.py#L76)。RSA加密在线生成看[这里](http://tool.chacuo.net/cryptrsapubkey)
 
 ## Get Publickey 获取公钥
 
-URL:http://192.168.14.240:5000/user/password
-
-method: get
+GET http://127.0.0.1:5000/user/password
 
 return:
 
@@ -57,12 +78,20 @@ return:
     "reason": "错误原因"
 }
 ```
-
+example 示例
+```bash
+root@ubuntu:~# curl http://127.0.0.1:5000/user/password
+{
+  "errcode": 0,
+  "reason": "success",
+  "result": {
+    "pubkey": "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCL/kiPydajd864uwuRABZ2dPRd\n2Cnl095IIHdHh0hljrWcwWxk7FNd896I6P/Z/wnHVBsPklkOEw0/9p6AVnTDI1fa\nEUPYgKaGAQWrf6A+3YGBxucaOqdttN4c5/vIUEY0L1MDRsJEADTfji/KgS4FaGkf\nJKhqQf+r5TkLC/IzsQIDAQAB\n-----END PUBLIC KEY-----"
+  }
+}
+```
 ## test encrypt 测试加密
 
-URL:http://192.168.14.240:5000/user/password
-
-method: post
+POST http://127.0.0.1:5000/user/password
 
 args:json
 
@@ -96,12 +125,21 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
+root@ubuntu:/home/ubuntu# curl --header "Content-Type:application/json" --request POST --data '{"password":"dsBRr665H+O50qAyjf627O3fAsK+XEq0RoGn9x+WNedIRK1Yn8wolrOfHR72I7F5NPgz4aXQsVy+HR/xensubvJzTuhhinfRhHUX9t2DtLpAB0Y/Dh7cUDTB96CXP7IQuM0TIYuqXGxd/6eL8mWMnJGPGOuwGHHcImXdytdEqTg="}' http://127.0.0.1:5000/user/password
+{
+  "errcode": 0,
+  "reason": "success",
+  "result": {
+    "password": "111111"
+  }
+}
 
+```
 ## Register 注册
 
-URL:http://192.168.14.240:5000/user/regist
-
-method: post
+POST http://127.0.0.1:5000/user/regist
 
 args:json
 
@@ -116,7 +154,7 @@ args:json
 {
 	"username":"test",
 	"password":"123",
-	"cellphone":"15278559846"
+	"cellphone":"15278559846",
 	"email":"15574859643@163.com"
 }
 ```
@@ -141,12 +179,20 @@ return:
     "reason": "错误原因"
 }
 ```
-
+example 示例
+```bash
+root@ubuntu:/home/ubuntu# curl --header "Content-Type:application/json" --request POST --data '{"username":"iLlNQVJEl1UXfvPGXi0QqZrw1CVRriQ7K+idYLjLnTNND+/GN4eId0qqDOSlI3vwAiiOu2uIfCAr4K/JMbrl5RJkbLHw7Puvp7/2a5jWM3/vmptoqQPIvsMh5pP3UAcwivPyXqUnLxu/K4zvbiAvX0ezM5D19QP7NqZhohmZCJU=","password":"dsBRr665H+O50qAyjf627O3fAsK+XEq0RoGn9x+WNedIRK1Yn8wolrOfHR72I7F5NPgz4aXQsVy+HR/xensubvJzTuhhinfRhHUX9t2DtLpAB0Y/Dh7cUDTB96CXP7IQuM0TIYuqXGxd/6eL8mWMnJGPGOuwGHHcImXdytdEqTg="}' http://127.0.0.1:5000/user/regist
+{
+  "errcode": 0,
+  "reason": "success",
+  "result": {
+    "token": "48cbfb56-51f4-11e8-82da-fa163e1b6459"
+  }
+}
+```
 ## Pay To User 优惠活动，给新注册的用户发10个ulord
 
-URL:http://192.168.14.240:5000/user/activity
-
-method: get
+GET http://127.0.0.1:5000/user/activity
 
 head:token
 
@@ -170,12 +216,20 @@ return:
     "reason": "错误原因"
 }
 ```
-
+example 示例
+```bash
+root@ubuntu:/home/ubuntu# curl --header "token:48cbfb56-51f4-11e8-82da-fa163e1b6459" http://127.0.0.1:5000/user/activity
+{
+  "errcode": 20206,
+  "reason": "支付失败.",
+  "result": {
+    "wallet_reason": "(-32603, 'Server error:   File \"/home/ubuntu/ht/env/ulord/lib/python2.7/site-packages/muwallet-1.1.2-py2.7.egg/uwallet/network.py\", line 785, in synchronous_get | BaseException: Failed to get response from server within timeout of 30')"
+  }
+}
+```
 ## Login    登录
 
-URL:http://192.168.14.240:5000/user/login
-
-method: post
+POST http://127.0.0.1:5000/user/login
 
 args:json
 
@@ -211,12 +265,21 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
+root@ubuntu:/home/ubuntu# curl --header "Content-Type:application/json" --request POST --data '{"username":"iLlNQVJEl1UXfvPGXi0QqZrw1CVRriQ7K+idYLjLnTNND+/GN4eId0qqDOSlI3vwAiiOu2uIfCAr4K/JMbrl5RJkbLHw7Puvp7/2a5jWM3/vmptoqQPIvsMh5pP3UAcwivPyXqUnLxu/K4zvbiAvX0ezM5D19QP7NqZhohmZCJU=","password":"dsBRr665H+O50qAyjf627O3fAsK+XEq0RoGn9x+WNedIRK1Yn8wolrOfHR72I7F5NPgz4aXQsVy+HR/xensubvJzTuhhinfRhHUX9t2DtLpAB0Y/Dh7cUDTB96CXP7IQuM0TIYuqXGxd/6eL8mWMnJGPGOuwGHHcImXdytdEqTg="}' http://127.0.0.1:5000/user/login
+{
+  "errcode": 0,
+  "reason": "success",
+  "result": {
+    "token": "37b28362-51f9-11e8-82da-fa163e1b6459"
+  }
+}
 
+```
 ## Logout    登出
 
-URL:http://192.168.14.240:5000/user/logout
-
-method: post，get
+POST/GET http://127.0.0.1:5000/user/logout
 
 head:token
 
@@ -238,12 +301,38 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
+root@ubuntu:/home/ubuntu# curl --header "token:37b28362-51f9-11e8-82da-fa163e1b6459" http://127.0.0.1:5000/user/logout
+{
+  "errcode": 0,
+  "reason": "success",
+  "result": "success"
+}
+root@ubuntu:/home/ubuntu# curl --header "token:37b28362-51f9-11e8-82da-fa163e1b6459" --request POST http://127.0.0.1:5000/user/logout
+{
+  "errcode": 60104,
+  "reason": "无效的token"
+}
+root@ubuntu:/home/ubuntu# curl --header "Content-Type:application/json" --request POST --data '{"username":"iLlNQVJEl1UXfvPGXi0QqZrw1CVRriQ7K+idYLjLnTNND+/GN4eId0qqDOSlI3vwAiiOu2uIfCAr4K/JMbrl5RJkbLHw7Puvp7/2a5jWM3/vmptoqQPIvsMh5pP3UAcwivPyXqUnLxu/K4zvbiAvX0ezM5D19QP7NqZhohmZCJU=","password":"dsBRr665H+O50qAyjf627O3fAsK+XEq0RoGn9x+WNedIRK1Yn8wolrOfHR72I7F5NPgz4aXQsVy+HR/xensubvJzTuhhinfRhHUX9t2DtLpAB0Y/Dh7cUDTB96CXP7IQuM0TIYuqXGxd/6eL8mWMnJGPGOuwGHHcImXdytdEqTg="}' http://127.0.0.1:5000/user/login
+{
+  "errcode": 0,
+  "reason": "success",
+  "result": {
+    "token": "9193b982-51f9-11e8-82da-fa163e1b6459"
+  }
+}
+root@ubuntu:/home/ubuntu# curl --header "token:9193b982-51f9-11e8-82da-fa163e1b6459" --request POST http://127.0.0.1:5000/user/logout
+{
+  "errcode": 0,
+  "reason": "success",
+  "result": "success"
+}
 
+```
 ## Publish  发布博客
 
-URL:http://192.168.14.240:5000/blog/publish
-
-method：post
+POST http://127.0.0.1:5000/blog/publish
 
 head:token
 
@@ -288,11 +377,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
+
+```
 ## List All Blog  获取博客
 
-URL:http://192.168.14.240:5000/blog/all/list
-
-method：post
+POST http://127.0.0.1:5000/blog/all/list
 
 head:token
 
@@ -353,12 +444,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## check isbought  检查博客是否付费
 
-URL:http://192.168.14.240:5000/blog/isbought
-
-method：post
+POST http://127.0.0.1:5000/blog/isbought
 
 head:token
 
@@ -406,12 +498,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## Pay blogs 支付博客
 
-URL:http://192.168.14.240:5000/pay/blogs
-
-method:post
+POST http://127.0.0.1:5000/pay/blogs
 
 head:token
 
@@ -451,12 +544,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## Pay ADs 支付广告
 
-URL:http://192.168.14.240:5000/pay/ads
-
-method:post
+POST http://127.0.0.1:5000/pay/ads
 
 head:token
 
@@ -496,12 +590,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## List Personal Info 列出个人信息
 
-URL:http://192.168.14.240:5000/user/info
-
-method: get
+GET http://127.0.0.1:5000/user/info
 
 head:token
 
@@ -527,12 +622,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## List Personal Balance 列出个人余额
 
-URL:http://192.168.14.240:5000/user/balance
-
-method: get
+GET http://127.0.0.1:5000/user/balance
 
 head:token
 
@@ -559,12 +655,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## List Personal Published 列出个人发布过的资源
 
-URL:http://192.168.14.240:5000/user/published
-
-method: post
+POST http://127.0.0.1:5000/user/published
 
 head:token
 
@@ -618,12 +715,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## List Personal Published num 列出个人发布过的资源数量
 
-URL:http://192.168.14.240:5000/user/published/num
-
-method: get
+GET http://127.0.0.1:5000/user/published/num
 
 head:token
 
@@ -647,12 +745,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## List Personal Bought 列出个人购买过的资源
 
-URL:http://192.168.14.240:5000/user/bought
-
-method: post
+POST http://127.0.0.1:5000/user/bought
 
 head:token
 
@@ -668,7 +767,7 @@ args:json
 {
     "page":1,
     "num":1,
-    "category":0            
+    "category":0
 }
 ```
 > 默认为每页10条数据，返回第一页。查询条件为0-消费支出，1-广告收入，其他-所有
@@ -706,12 +805,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## List Billings detail 列出个人账单详细信息(收入和支出接口总和)
 
-URL:http://192.168.14.240:5000/user/billings/details
-
-method: post
+POST http://127.0.0.1:5000/user/billings/details
 
 head:token
 
@@ -789,12 +889,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## List Billings 列出个人账单
 
-URL:http://192.168.14.240:5000/user/billings/
-
-method: get
+GET http://127.0.0.1:5000/user/billings/
 
 head:token
 
@@ -833,16 +934,17 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## ~~List Customer's Billings 列出作为消费者个人账单~~
 
 ## List User's Outgos 列出个人支出
 
-~~URL:http://192.168.14.240:5000/user/billings/customer~~
+~~POST http://127.0.0.1:5000/user/billings/customer~~
 
-URL:http://192.168.14.240:5000/user/billings/outgo
-
-method: post
+POST http://127.0.0.1:5000/user/billings/outgo
 
 head:token
 
@@ -902,16 +1004,17 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## ~~List Author's Billings 列出作为发布者个人账单~~
 
 ## List User's Incomes 列出个人收入账单
 
-~~URL:http://192.168.14.240:5000/user/billings/author~~
+~~POST http://127.0.0.1:5000/user/billings/author~~
 
-URL:http://192.168.14.240:5000/user/billings/income
-
-method: post
+POST http://127.0.0.1:5000/user/billings/income
 
 head:token
 
@@ -971,12 +1074,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## Add Blog View 增加博客访问量
 
-URL:http://192.168.14.240:5000/blog/views
-
-method: post
+POST http://127.0.0.1:5000/blog/views
 
 head:token
 
@@ -1012,11 +1116,12 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## Modify Personal Info 修改个人信息
-URL:http://192.168.14.240:5000/user/modify
-
-method: post
+POST http://127.0.0.1:5000/user/modify
 
 head:token
 
@@ -1063,12 +1168,13 @@ return:
     "reason": "错误原因"
 }
 ```
+example 示例
+```bash
 
+```
 ## ~~Modify Blog Info 修改文章信息~~
 
-~~URL:http://192.168.14.240:5000/blog/modify~~
-
-~~method: post~~
+~~POST http://127.0.0.1:5000/blog/modify~~
 
 ~~head:token~~
 
@@ -1092,9 +1198,7 @@ return:
 
 ## ~~Record Blog 添加博客访问~~
 
-~~URL:http://192.168.14.240:5000/blog/record~~
-
-~~method：post~~
+~~POST http://127.0.0.1:5000/blog/record~~
 
 ~~head:token~~
 
