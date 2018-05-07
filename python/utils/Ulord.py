@@ -2,7 +2,7 @@
 # @File  : ipfs_module.py
 # @Author: PuJi
 # @Date  : 2018/4/10 0010
-import os, time, json, logging, sys
+import os, time, json, logging, sys, subprocess, atexit, platform
 
 import ipfsapi, requests
 
@@ -15,20 +15,58 @@ from config import baseconfig
 class UlordTransmitter():
     # download and upload files from Ulord
     def __init__(self, host='127.0.0.1', port='5001'):
-        self.ipfs_host = host
-        self.ipfs_port = port
-        self.connect = ipfsapi.connect(self.ipfs_host, self.ipfs_port)
-        self.log = ""
+        self.udfs_host = host
+        self.udfs_port = port
+        self.log = logging.getLogger('UlordTransmitter:')
         self.chunks = {}
         self.objects = None
         self.links = []
-        self.downloadpath = os.path.join(FileHelper.getRootPath(), 'download')
+        # get some paths
+        # self.downloadpath = os.path.join(FileHelper.getRootPath(), 'download')
+        self.config = os.path.join(FileHelper.getRootPath(), 'config')
+        self.lock = os.path.join(self.config, 'repo.lock')
+        self.udfs_path = self.get_udfs()
+        self.udfs_daemon_pid = self.get_pid()
+        # start daemon
+        if not os.path.isfile(self.config):
+            self.start_init()
+        if self.udfs_init:
+            self.modify_config()
+            self.start()
+        atexit.register(self.stop)
+
+        self.connect = ipfsapi.connect(self.udfs_host, self.udfs_port)
+
+    def get_pid(self):
+        if os.path.isfile(self.lock):
+            self.log.debug('get udfs daemon pid')
+            with open(self.lock, 'r') as target:
+                return json.load(target).get("OwnerPID")
+        else:
+            self.log.debug("self.lock is {}.It doesn't exist".format(self.lock))
+            return None
+
+    def get_udfs(self):
+        tools = os.path.join(FileHelper.getRootPath(), 'Tools', 'udfs')
+        self.current_os = platform.system()
+        self.log.info('Current os is {}'.format(self.current_os))
+
+        if self.current_os in ["Windows", "Win32"]:
+            udfs = os.path.join(tools, 'udfs.exe')
+        elif self.current_os in ["Mac OSX", "Darwin"]:
+            udfs = os.path.join(tools, 'udfs')
+        elif self.current_os == "Linux":
+            udfs = os.path.join(tools, 'udfs')
+        else:
+            self.log.critical("Unknow operating system")
+            sys.exit(1)
+        return udfs
 
     def update(self, host='127.0.0.1', port='5001'):
-        self.ipfs_host = host
-        self.ipfs_port = port
-        self.connect = ipfsapi.connect(self.ipfs_host, self.ipfs_port)
-        self.log = ""
+        self.udfs_host = host
+        self.udfs_port = port
+        self.connect = ipfsapi.connect(self.udfs_host, self.udfs_port)
+        self.log = logging.getLogger("UlordTransmitter:")
         self.chunks = {}
         self.objects = None
         self.links = []
@@ -134,6 +172,66 @@ class UlordTransmitter():
                     os.remove(tempjson)
                 except Exception, e:
                     print("{0}:{1} remove failed:{2}".format(tempjson, os.path.isfile(tempjson), e))
+
+    def start_command(self, cmd):
+        # start external command
+        self.log.info("starting command,current command:{}".format(cmd))
+        FNULL = open(os.devnull, 'w')
+        pl = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=FNULL)
+        # self.log.info("end command,result is {}".format(pl.communicate()))
+        return pl
+
+    def start(self):
+        # start udfs
+        cmd = "{0} --config {1} daemon".format(self.udfs_path,self.config)
+        self.udfs_daemon = self.start_command(cmd)
+        self.udfs_daemon_pid = self.udfs_daemon.pid
+
+    def start_init(self):
+        # init udfs
+        cmd = "{0} --config {1} init".format(self.udfs_path, self.config)
+        self.udfs_init = self.start_command(cmd)
+        time.sleep(3)
+
+    def modify_config(self):
+        self.udfs_config = os.path.join(self.config, 'config')
+        if os.path.isfile(self.udfs_config):
+            # modify config file
+            self.log.debug("starting modify udfs config")
+            with open(self.udfs_config) as target:
+                self.udfs_json = json.load(target)
+            self.udfs_json['Bootstrap'] = ["/ip4/114.67.37.2/tcp/20515/ipfs/QmctwnuHwE8QzH4yxuAPtM469BiCPK5WuT9KaTK3ArwUHu"]
+            self.udfs_json['Datastore']['StorageMax'] = '0MB'
+            with open(self.udfs_config, 'w') as target:
+                json.dump(self.udfs_json, target, indent=2)
+            self.log.debug("end modify udfs config")
+        else:
+            self.log.error("error get udfs config.Restart init...")
+            self.start_init()
+
+    def stop(self):
+        # kill the udfs daemon
+        if self.udfs_daemon_pid:
+            self.log.info("stop daemon")
+            print("stop daemon")
+            if self.current_os in ["Windows", "Win32"]:
+                self.log.debug("excute taskkill")
+                os.popen('taskkill.exe /pid:{0} /F'.format(self.udfs_daemon_pid))
+            elif self.current_os in ["Mac OSX", "Darwin"]:
+                os.killpg(self.udfs_daemon_pid, signal.SIGTERM)
+            elif self.current_os == "Linux":
+                os.killpg(self.udfs_daemon_pid, signal.SIGTERM)
+            else:
+                self.log.critical("Unknow operating system")
+                sys.exit(1)
+            # print(self.lock)
+            # print(os.path.isfile(self.lock))
+            if os.path.isfile(self.lock):
+                try:
+                    os.remove(self.lock)
+                except Exception, e:
+                    self.log.error('remove self.lock({0}) failed!'.format(self.lock))
+                    print("remove failed!", e)
 
 
 class UlordHelper(object):

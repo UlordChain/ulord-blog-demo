@@ -437,11 +437,11 @@ return:
     "errcode": 0,
     "reason": "success",
     "result":{
-        "ipfs_hash":ipfs_hash,
+        "udfs_hash":udfs_hash,
     }
 }
 
-# 支付成功返回文件的hash值，通过IPFS接口获取数据
+# 支付成功返回文件的hash值，通过UDFS接口获取数据
 ```
 
 失败
@@ -451,7 +451,6 @@ return:
     "reason": "错误原因"
 }
 ```
-> IPFS 支持大部分语言的接口,[js参考链接](https://github.com/ipfs/js-ipfs-api)
 
 ## Pay ADs 支付广告
 
@@ -483,7 +482,7 @@ return:
     "errcode": 0,
     "reason": "success",
     "result":{
-        "ipfs_hash":ipfs_hash,
+        "udfs_hash":udfs_hash,
     }
 }
 

@@ -3,7 +3,7 @@
 # @Author: PuJi
 # @Date  : 2018/4/10 0010
 
-import os, time, requests, json
+import os, time, requests, json, logging
 from uuid import uuid1
 
 from flask import request, g, jsonify
@@ -39,7 +39,7 @@ def auth_login_required():
 
 @app.route('/user/password', methods=['GET', 'POST'])
 def get_pubkey():
-    print("start get password")
+    app.logger.info("start get password")
     if request.method == 'GET':
         # print("response")
         return jsonify({
@@ -76,7 +76,7 @@ def regist():
         username = rsahelper.decrypt(rsahelper.privkey, username)
         password = rsahelper.decrypt(rsahelper.privkey, password)
     except:
-        print("fronted doesn't encrypt")
+        app.logger.warn("fronted doesn't encrypt")
     # if User.query.filter_by(username=username).first() is not None and User.query.filter_by(wallet=username).first() is not None:
     # delete modify username.It will make the publish error
     if User.query.filter_by(username=username).first() is not None and User.query.filter_by(
@@ -91,7 +91,7 @@ def regist():
         try:
             cellphone = rsahelper.decrypt(rsahelper.privkey, cellphone)
         except:
-            print("frontend doesn't encrypt cellphone")
+            app.logger.warn("frontend doesn't encrypt cellphone")
         if not checker.isCellphone(cellphone):
             return jsonify({
                 'errcode': 60106,
@@ -101,7 +101,7 @@ def regist():
         try:
             email = rsahelper.decrypt(rsahelper.privkey, email)
         except:
-            print("frontend doesn't encrypt email")
+            app.logger.warn("frontend doesn't encrypt email")
         if not checker.isMail(email):
             return jsonify({
                 'errcode': 60105,
@@ -170,8 +170,8 @@ def activity():
 def login():
     username = request.json.get('username')
     password = request.json.get('password')
-    print(username)
-    print(password)
+    app.logger.debug(username)
+    app.logger.debug(password)
     if username is None or password is None:
         # missing arguments
         return jsonify({
@@ -180,10 +180,10 @@ def login():
         })
     try:
         username = rsahelper.decrypt(rsahelper.privkey, username)
-        # print(username)
+        # app.logger.debug(username)
         password = rsahelper.decrypt(rsahelper.privkey, password)
     except:
-        print("frontend doesn's encrypt")
+        app.logger.warn("frontend doesn's encrypt")
     login_user = User.query.filter_by(username=username).first()
     if not login_user:
         # no user
@@ -244,18 +244,18 @@ def blog_publish():
     try:
         body_txt = os.path.join(os.path.join(os.getcwd(), 'blogs'), '{}.txt'.format(title))
     except:
-        print("Doesn't support chinese.Using uuid")
+        app.logger.warn("Doesn't support chinese.Using uuid")
         body_txt = os.path.join(os.path.join(os.getcwd(), 'blogs'), '{}.txt'.format(str(uuid1())))
     if FileHelper.saveFile(body_txt, body):
         end_save = time.time()
-        print({
+        app.logger.debug({
             'start':start,
             'end_save':end_save,
             'total':end_save - start
         })
         file_hash = ulord_transmitter.upload(body_txt)
         end_upload = time.time()
-        print({
+        app.logger.debug({
             'start':end_save,
             'end_upload':end_upload,
             'total':end_upload - end_save
@@ -263,13 +263,13 @@ def blog_publish():
         try:
             os.remove(body_txt)
             end_remove = time.time()
-            print({
+            app.logger.debug({
                 'start':end_upload,
                 'end_remove': end_remove,
                 'total':end_remove - end_upload
             })
         except:
-            print("Error rm {}".format(body_txt))
+            app.logger.error("Error rm {}".format(body_txt))
 
         # TODO publish
         # init data schema
@@ -277,13 +277,13 @@ def blog_publish():
         data['author'] = current_user.wallet
         data['title'] = title
         data['tag'] = tags
-        data['ipfs_hash'] = file_hash
+        data['udfs_hash'] = file_hash
         data['price'] = amount
         data['pay_password'] = current_user.pay_password
         data['description'] = description
         result = ulord_helper.publish(data)
         end_publish = time.time()
-        print({
+        app.logger.debug({
             'start':end_remove,
             'end_publish':end_publish,
             'total':end_publish - end_remove
@@ -357,11 +357,11 @@ def pay_blogs():
             'reason':"缺少参数"
         })
     try:
-        print("current password:{}".format(password))
+        app.logger.debug("current password:{}".format(password))
         password = rsahelper.decrypt(rsahelper.privkey, password)
-        print("decrypt password:{}".format(password))
+        app.logger.debug("decrypt password:{}".format(password))
     except:
-        print("frontend doesn't encrypt")
+        app.logger.warn("frontend doesn't encrypt")
     if not current_user.verify_password(password):
         return jsonify({
             'errcode': 60003,
@@ -551,7 +551,7 @@ def modify_userinfo():
         try:
             password = rsahelper.decrypt(rsahelper.privkey, password)
         except:
-            print("frontend doesn't encrypt password")
+            app.logger.warn("frontend doesn't encrypt password")
     if not current_user.verify_password(password):
         return jsonify({
             'errcode': 60003,
@@ -562,7 +562,7 @@ def modify_userinfo():
         try:
             cellphone = rsahelper.decrypt(rsahelper.privkey, cellphone)
         except:
-            print("frontend doesn't encrypt cellphone")
+            app.logger.warn("frontend doesn't encrypt cellphone")
         if not checker.isCellphone(cellphone):
             return jsonify({
                 'errcode': 60106,
@@ -572,7 +572,7 @@ def modify_userinfo():
         try:
             email = rsahelper.decrypt(rsahelper.privkey, email)
         except:
-            print("frontend doesn't encrypt email")
+            app.logger.warn("frontend doesn't encrypt email")
         if not checker.isMail(email):
             return jsonify({
                 'errcode': 60105,
@@ -591,7 +591,7 @@ def modify_userinfo():
         try:
             new_password = rsahelper.decrypt(rsahelper.privkey, new_password)
         except:
-            print("frontend doesn't encrypt new_password")
+            app.logger.warn("frontend doesn't encrypt new_password")
         current_user.hash_password(new_password)
     # 不能移动，先判断再提交。否则验证失败可能也会提交
     if cellphone:
@@ -616,6 +616,15 @@ if __name__ == '__main__':
     from tornado.httpserver import HTTPServer
     from tornado.ioloop import IOLoop
 
+    # set log
+    # handler = logging.FileHandler('flask2.log', encoding='UTF-8')
+    # .setLevel(logging.DEBUG)
+    # logging_format = logging.Formatter(
+    #     '%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(lineno)s - %(message)s')
+    # handler.setFormatter(logging_format)
+    # app.logger.addHandler(handler)
+
+    # create tornado webwrapper and start
     http_server = HTTPServer(WSGIContainer(app))
     http_server.listen(5000)
     IOLoop.instance().start()
