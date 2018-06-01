@@ -14,10 +14,10 @@
 ### 2. Source code description:
 #### 2.1 js folder section
 > * A blog system demo of ulord open platform based on nodejs middle layer, express framework and paython background.<br>
-> * [Details](https://github.com/UlordChain/ulord-blog-demo/blob/master/js/READEME_ZH.MD)
+> * [Details](https://github.com/UlordChain/ulord-blog-demo/blob/master/js/README.MD)
 #### 2.2 python Folder section
 > * A lightweight blog. Users upload articles to Ulord platform and price them for viewing by other users. All trading information can be checked by Ulord block browser.<br>
-> * [Details](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README_ch.md)
+> * [Details](https://github.com/UlordChain/ulord-blog-demo/blob/master/python/README.md)
 
 ### <Case 1>
 #### Ulord Blog Application
