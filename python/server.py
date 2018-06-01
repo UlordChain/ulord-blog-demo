@@ -1,22 +1,43 @@
 # coding=utf-8
-# @File  : server.py
+# @File  : junior.py
 # @Author: PuJi
-# @Date  : 2018/4/10 0010
+# @Date  : 2018/5/14 0014
 
 import os, time, requests, json, logging
 from uuid import uuid1
 
 from flask import request, g, jsonify
 
-from DBhelper.manage import app, db, User
-from utils.Ulord import ulord_transmitter, ulord_helper
-from utils import FileHelper
-from config import baseconfig
-from utils.Checker import checker
-from utils.encryption import rsahelper
+from ulordapi import utils
+from ulordapi.manage import app, db, User
+from ulordapi.up import ulord_helper
+from ulordapi.config import ulordconfig
+from ulordapi.errcode import return_result
+from ulordapi.user import Junior
+
+
+log = logging.getLogger('webServer')
+
+junior = Junior(appkey="5d42b27e581c11e88b12f48e3889c8ab", secret="5d42b27f581c11e8bf63f48e3889c8ab")
+blog_config = {
+    'baseconfig':{
+        'config_file':'E:\ulord\ulord-blog-demo\config'
+    },
+    'logconfig':{
+        'log_file_path': "E:\ulord\ulord-blog-demo\junior.log"
+    }
+}
+junior.config_edit(blog_config)
+
+junior.create_database('E:\ulord\ulord-blog-demo')
 
 
 def auth_login_required():
+    """
+    check token
+
+    :return: current user
+    """
     head_token = request.headers.get('token')
     if not head_token:
         return {
@@ -25,206 +46,98 @@ def auth_login_required():
         }
     login_user = User.query.filter_by(token=head_token).first()
     if not login_user:
-        return {
-            'errcode':60104,
-            'reason':"无效的token"
-        }
+        return return_result(60104)
     if int(login_user.timestamp) < time.time():
-        return {
-            'errcode': 60104,
-            'reason': "无效的token"
-        }
+        return return_result(60104)
     return login_user
 
 
 @app.route('/user/password', methods=['GET', 'POST'])
 def get_pubkey():
-    app.logger.info("start get password")
+    """
+    Get:generate publikey to fronted-end.Post:Check the message if crypted.
+
+    :return: get-publickey/post-decrypted message
+    """
+    log.info("start get password")
     if request.method == 'GET':
-        # print("response")
-        return jsonify({
-            'errcode': 0,
-            'reason': "success",
-            'result': {
-                "pubkey": rsahelper.pubkeybytes
-            }
-        })
+        return jsonify(return_result(0, result={"pubkey":junior.rsahelper.pubkeybytes}))
     elif request.method == 'POST':
         message = request.json.get("password")
-        return jsonify({
-            'errcode': 0,
-            'reason': 'success',
-            'result': {
-                'password': rsahelper.decrypt(rsahelper.privkey, message)
-            }
-        })
+        return jsonify(return_result(0, result={'password': junior.get_purearg(message)}))
 
 
 @app.route('/user/regist',methods=['POST'])
 def regist():
+    """
+    user regist
+
+    :return: user token
+    """
     username = request.json.get('username')
     password = request.json.get('password')
     cellphone = request.json.get('cellphone')
     email = request.json.get('email')
     if username is None or password is None:
         # missing arguments
-        return jsonify({
-            'errcode': 60100,
-            'reason': "缺少参数"
-        })
-    try:
-        username = rsahelper.decrypt(rsahelper.privkey, username)
-        password = rsahelper.decrypt(rsahelper.privkey, password)
-    except:
-        app.logger.warn("fronted doesn't encrypt")
-    # if User.query.filter_by(username=username).first() is not None and User.query.filter_by(wallet=username).first() is not None:
-    # delete modify username.It will make the publish error
-    if User.query.filter_by(username=username).first() is not None and User.query.filter_by(
-                wallet=username).first() is not None:
-        # existing user
-        return jsonify({
-            'errcode':60000,
-            'reason':"用户已存在"
-        })
-    # check cellphone and email
-    if cellphone:
-        try:
-            cellphone = rsahelper.decrypt(rsahelper.privkey, cellphone)
-        except:
-            app.logger.warn("frontend doesn't encrypt cellphone")
-        if not checker.isCellphone(cellphone):
-            return jsonify({
-                'errcode': 60106,
-                'reason': '无效的手机号'
-            })
-    if email:
-        try:
-            email = rsahelper.decrypt(rsahelper.privkey, email)
-        except:
-            app.logger.warn("frontend doesn't encrypt email")
-        if not checker.isMail(email):
-            return jsonify({
-                'errcode': 60105,
-                'reason': '无效的邮箱'
-            })
-    # user get wallet and password (or not) from ulord platform
-    user = User(username=username)
-    user.hash_password(password)
-    user.wallet = username
-    user.pay_password = user.password_hash
-    regist_result = ulord_helper.regist(user.wallet, user.pay_password)
-    if regist_result.get("errcode") != 0:
-        return jsonify(regist_result)
-    # 不能移动，先判断再提交。否则验证失败可能也会提交
-    if cellphone:
-        user.cellphone = cellphone
-    if email:
-        user.email = email
-
-    token = str(uuid1())
-    user.token = token
-    user.timestamp = int(time.time()) + 24 * 60 * 60
-    db.session.add(user)
-    db.session.commit()
-    return jsonify({
-        'errcode': 0,
-        'reason': 'success',
-        'result': {
-            "token": token
-        }
-    })
-
+        return jsonify(return_result(60100))
+    args = junior.get_purearg([username, password, cellphone, email])
+    if args:
+        result = junior.user_regist(username=args[0],password=args[1],cellphone=args[2],email=args[3])
+        return jsonify(result)
+    else:
+        return jsonify(return_result(60100))
 
 @app.route('/user/activity', methods=['GET'])
 def activity():
+    """
+    activity.Send 10 ulord to new user.
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    if current_user.activity == baseconfig.amount:
-        return jsonify({
-            'errcode': 60301,
-            'reason': "已赠送"
-        })
-    else:
-        credit_result = ulord_helper.paytouser(current_user.wallet)
-        for retry in range(2):
-            if credit_result.get("errcode") == 0:
-                break
-            else:
-                credit_result = ulord_helper.paytouser(current_user.wallet)
-
-        if credit_result.get("errcode") != 0:
-            return jsonify(credit_result)
-        else:
-            current_user.activity = baseconfig.amount
-            return jsonify({
-                "errcode": 0,
-                "reason": "success",
-                "result":{
-                    "amount": baseconfig.amount,
-                    }
-            })
+    return jsonify(junior.user_activity(current_user.token))
 
 
 @app.route('/user/login',methods=['POST'])
 def login():
+    """
+    user login
+
+    :return: user token
+    """
     username = request.json.get('username')
     password = request.json.get('password')
-    app.logger.debug(username)
-    app.logger.debug(password)
     if username is None or password is None:
         # missing arguments
         return jsonify({
             'errcode': 60100,
             'reason': "缺少参数"
         })
-    try:
-        username = rsahelper.decrypt(rsahelper.privkey, username)
-        # app.logger.debug(username)
-        password = rsahelper.decrypt(rsahelper.privkey, password)
-    except:
-        app.logger.warn("frontend doesn's encrypt")
-    login_user = User.query.filter_by(username=username).first()
-    if not login_user:
-        # no user
-        return jsonify({
-            'errcode': 60002,
-            'reason': "用户不存在"
-        })
-    if not login_user.verify_password(password):
-        # error password
-        return jsonify({
-            'errcode': 60003,
-            'reason': "密码错误"
-        })
-    token = str(uuid1())
-    login_user.token = token
-    login_user.timestamp = int(time.time()) + 24 * 60 * 60
-    db.session.commit()
-    return jsonify({
-        'errcode':0,
-        'reason': "success",
-        'result':{
-            "token":token
-        }
-    })
+    username = junior.get_purearg(username)
+    return jsonify(junior.user_login(username=username, password=password,encrypted=True))
 
 
 @app.route('/user/logout',methods=['POST','GET'])
 def logout():
+    """
+    user logout
+
+    :return: success
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    current_user.timestamp = int(time.time()) - 1 # auth_login_require check the timestamp
-    return jsonify({
-        'errcode': 0,
-        'reason': "success",
-        'result': "success"
-    })
+    return jsonify(junior.user_logout(current_user.token))
 
 
 @app.route('/blog/publish',methods=['POST'])
 def blog_publish():
+    """
+    publish blog
+
+    :return: claim id
+    """
     current_user = auth_login_required() # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -233,71 +146,23 @@ def blog_publish():
     amount = request.json.get('amount')
     tags = request.json.get('tag')
     description = request.json.get('description')
-    if title is None or body is None or amount is None:
-        # missing arguments
-        return jsonify({
-            'errcode': 60100,
-            'reason':"缺少参数"
-        })
-    # TODO upload body to IPFS
-    start = time.time()
-    try:
-        body_txt = os.path.join(os.path.join(os.getcwd(), 'blogs'), '{}.txt'.format(title))
-    except:
-        app.logger.warn("Doesn't support chinese.Using uuid")
-        body_txt = os.path.join(os.path.join(os.getcwd(), 'blogs'), '{}.txt'.format(str(uuid1())))
-    if FileHelper.saveFile(body_txt, body):
-        end_save = time.time()
-        app.logger.debug({
-            'start':start,
-            'end_save':end_save,
-            'total':end_save - start
-        })
-        file_hash = ulord_transmitter.upload(body_txt)
-        end_upload = time.time()
-        app.logger.debug({
-            'start':end_save,
-            'end_upload':end_upload,
-            'total':end_upload - end_save
-        })
-        try:
-            os.remove(body_txt)
-            end_remove = time.time()
-            app.logger.debug({
-                'start':end_upload,
-                'end_remove': end_remove,
-                'total':end_remove - end_upload
-            })
-        except:
-            app.logger.error("Error rm {}".format(body_txt))
-
-        # TODO publish
-        # init data schema
-        data = ulord_helper.ulord_publish_data
-        data['author'] = current_user.wallet
-        data['title'] = title
-        data['tag'] = tags
-        data['udfs_hash'] = file_hash
-        data['price'] = amount
-        data['pay_password'] = current_user.pay_password
-        data['description'] = description
-        result = ulord_helper.publish(data)
-        end_publish = time.time()
-        app.logger.debug({
-            'start':end_remove,
-            'end_publish':end_publish,
-            'total':end_publish - end_remove
-        })
-        return jsonify(result)
+    body_hash = junior.udfs_upload([body])
+    # print(body)
+    # print(body_hash)
+    if body_hash and body_hash.get(body):
+        return jsonify(junior.user_publish(title=title, udfshash=body_hash.get(body),amount=amount,tags=tags,des=description,
+                                           usercondition={'usertoken':current_user.token}))
     else:
-        return jsonify({
-            'errcode': 60200,
-            'reason': "上传文件失败"
-        })
+        return jsonify(return_result(errcode=60400))
 
 
 @app.route('/blog/all/list',methods=['POST'])
 def blog_list():
+    """
+    list all blog
+
+    :return: blog list
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -311,11 +176,16 @@ def blog_list():
         page = 1
     if not num:
         num = 10
-    return jsonify(ulord_helper.queryblog(page, num))
+    return jsonify(junior.queryresource(page, num))
 
 
 @app.route('/blog/isbought',methods=['POST'])
 def check_bought():
+    """
+    check the resource if has been bought
+
+    :return: if has bought return resource hash,if not existed return null,if hasn't bought return none.
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -326,26 +196,36 @@ def check_bought():
             'reason': '缺少参数'
         })
     # check if has bought
-    return jsonify(ulord_helper.checkisbought(current_user.wallet, claim_ids))
+    return jsonify(junior.checkisbought(current_user.wallet, claim_ids))
 
 
 @app.route('/blog/views',methods=['POST'])
 def add_views():
+    """
+    add views according to the resource's title
+
+    :return: current views
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    dbID = request.json.get('id')
-    if dbID is None:
+    title = request.json.get('title')
+    if title is None:
         return jsonify({
             'errcode': 60100,
             'reason': '缺少参数'
         })
     # add blog views
-    return jsonify(ulord_helper.addviews(dbID))
+    return jsonify(junior.user_resouce_views(title))
 
 
 @app.route('/pay/blogs',methods=['POST'])
 def pay_blogs():
+    """
+    user pay blogs to view
+
+    :return: blog hash
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -356,68 +236,61 @@ def pay_blogs():
             'errcode':60100,
             'reason':"缺少参数"
         })
-    try:
-        app.logger.debug("current password:{}".format(password))
-        password = rsahelper.decrypt(rsahelper.privkey, password)
-        app.logger.debug("decrypt password:{}".format(password))
-    except:
-        app.logger.warn("frontend doesn't encrypt")
-    if not current_user.verify_password(password):
-        return jsonify({
-            'errcode': 60003,
-            'reason': '密码错误'
-        })
-    return jsonify(ulord_helper.transaction(current_user.wallet, claim_id, current_user.pay_password))
+    return jsonify(junior.user_pay_resources(current_user, claim_id, password, encrypted=True))
 
 
 @app.route('/pay/ads',methods=['POST'])
 def pay_ads():
+    """
+    get ulord from ads
+
+    :return: ads hash
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
     claim_id = request.json.get('claim_id')
-    author = request.json.get('author')
-    if claim_id is None or author is None:
+    authorname = request.json.get('author')
+    if claim_id is None or authorname is None:
         return jsonify({
             'errcode': 60100,
             'reason': "缺少参数"
         })
-    author_user = User.query.filter_by(username=author).first()
-    if not author_user:
-        return jsonify({
-            "errcode": 60006,
-            "reason": "作者已失效"
-        })
-    pay_password = author_user.pay_password
-    return jsonify(ulord_helper.transaction(current_user.wallet, claim_id, pay_password, True))
+    return jsonify(junior.user_pay_ads(current_user.wallet, claim_id, authorname))
 
 
 @app.route('/user/info',methods=['GET'])
 def get_userinfo():
+    """
+    get user infor
+
+    :return: dict.User information
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    return jsonify({
-        'errcode':0,
-        'reason':'success',
-        'result':{
-    	    "username": current_user.username,
-            "cellphone": current_user.cellphone,
-            "Email": current_user.email
-            }
-    })
+    return jsonify(junior.user_info_query(token=current_user.token))
 
 
 @app.route('/user/balance',methods=['GET'])
 def get_userbalance():
+    """
+    get user balance
+
+    :return: user balance
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    return jsonify(ulord_helper.querybalance(current_user.wallet, current_user.pay_password))
+
+    return jsonify(junior.querybalance(payer=current_user.wallet, pay_password=current_user.pay_password))
 
 
 @app.route('/user/published',methods=['POST'])
 def get_userpublished():
+    """
+    get blog list the user has published
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -435,49 +308,40 @@ def get_userpublished():
         num = 10
     if not category or category!=0 or category!=1 :
         category = 2  # 0-blog,1-ads,2-all
-    return jsonify(ulord_helper.queryuserpublished(current_user.wallet, page, num, category))
+    return jsonify(junior.queryuserpublished(current_user.wallet, page, num))
 
 
 @app.route('/user/published/num',methods=['GET'])
 def get_userpublishednum():
+    """
+    get the num of the blogs that user has published
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    return jsonify(ulord_helper.querypublishnum(current_user.wallet))
-
-
-@app.route('/user/bought',methods=['POST'])
-def get_userbought():
-    current_user = auth_login_required()  # check token
-    if type(current_user) is dict:
-        return jsonify(current_user)
-    try:
-        page = request.json.get('page')
-        num = request.json.get('num')
-        category = request.json.get('category')
-    except:
-        page = 1
-        num = 10
-        category = 2  # 0-blog,1-ads,2-all
-    if not page:
-        page = 1
-    if not num:
-        num = 10
-    if not category or category!=0 or category!=1 :
-        category = 2  # 0-blog,1-ads,2-all
-    return jsonify(ulord_helper.queryuserbought(current_user.wallet, page, num, category))
+    return jsonify(junior.ulord_published_num(current_user.wallet))
 
 
 @app.route('/user/billings',methods=['GET'])
 def get_billings():
+    """
+    query user's billing
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
-    return jsonify(ulord_helper.querybillings(current_user.wallet))
+    sdate = request.json.get('sdate')
+    edate = request.json.get('edate')
+    if not sdate or not edate:
+        return jsonify(return_result(60100))
+    return jsonify(junior.querybillings(current_user.wallet, sdate, edate))
 
 
 @app.route('/user/billings/details',methods=['POST'])
 def get_billingsdetail():
+    """
+    query user billing detail
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
@@ -491,51 +355,84 @@ def get_billingsdetail():
         page = 1
     if not num:
         num = 10
-    return jsonify(ulord_helper.querybillingsdetail(current_user.wallet, page, num))
+    return jsonify(junior.querybillingsdetail(current_user.wallet, page, num))
 
 
 @app.route('/user/billings/income',methods=['POST'])
 def get_incomebillings():
+    """
+    get user income billing information
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
     try:
         page = request.json.get('page')
-        num = request.json.get('num')
     except:
         page = 1
+    try:
+        num = request.json.get('num')
+    except:
         num = 10
+    try:
+        category = request.json.get('category')
+    except:
+        category = 2
+    sdate = request.json.get('sdate')
+    edate = request.json.get('edate')
     if not page:
         page = 1
     if not num:
         num = 10
-    return jsonify(ulord_helper.queryincomebillings(current_user.wallet, page, num))
+    if not category:
+        category = 2
+    if not sdate or not edate:
+        return jsonify(return_result(60100))
+    return jsonify(junior.queryincomebillings(current_user.wallet, sdate, edate, page, num, category=category))
 
 
 @app.route('/user/billings/outgo',methods=['POST'])
 def get_expensebillings():
+    """
+    get user expense billing information
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
     try:
         page = request.json.get('page')
-        num = request.json.get('num')
     except:
         page = 1
+    try:
+        num = request.json.get('num')
+    except:
         num = 10
+    try:
+        category = request.json.get('category')
+    except:
+        category = 2
+    sdate = request.json.get('sdate')
+    edate = request.json.get('edate')
     if not page:
         page = 1
     if not num:
         num = 10
-    return jsonify(ulord_helper.queryoutgobillings(current_user.wallet, page, num))
+    if not category:
+        category = 2
+    if not sdate or not edate:
+        return jsonify(return_result(60100))
+    return jsonify(junior.queryoutgobillings(current_user.wallet, sdate, edate ,page, num, category=category))
 
 
 @app.route('/user/modify',methods=['POST'])
 def modify_userinfo():
-    # Delete modify username.It will make publish error
+    """
+    Delete modify username.It will make publish error
+    """
     current_user = auth_login_required()  # check token
     if type(current_user) is dict:
         return jsonify(current_user)
+    # change demand: cann't change username
     # username = request.json.get('username')
     password = request.json.get('password')
     cellphone = request.json.get('cellphone')
@@ -547,85 +444,25 @@ def modify_userinfo():
             'errcode': 60100,
             'reason': '缺少参数'
         })
-    else:
-        try:
-            password = rsahelper.decrypt(rsahelper.privkey, password)
-        except:
-            app.logger.warn("frontend doesn't encrypt password")
-    if not current_user.verify_password(password):
-        return jsonify({
-            'errcode': 60003,
-            'reason': '密码错误'
-        })
-    # check cellphone and email
     if cellphone:
-        try:
-            cellphone = rsahelper.decrypt(rsahelper.privkey, cellphone)
-        except:
-            app.logger.warn("frontend doesn't encrypt cellphone")
-        if not checker.isCellphone(cellphone):
-            return jsonify({
-                'errcode': 60106,
-                'reason': '无效的手机号'
-            })
+        cellphone = junior.get_purearg(cellphone)
     if email:
-        try:
-            email = rsahelper.decrypt(rsahelper.privkey, email)
-        except:
-            app.logger.warn("frontend doesn't encrypt email")
-        if not checker.isMail(email):
-            return jsonify({
-                'errcode': 60105,
-                'reason': '无效的邮箱'
-            })
-
-    # if username:
-    #     if (User.query.filter_by(username=username).first() is not None) & (User.query.filter_by(wallet=username).first() is not None):
-    #         # existing user
-    #         return jsonify({
-    #             'errcode': 60000,
-    #             'reason': "账户已存在"
-    #         })
-    #     current_user.username = username
-    if new_password:
-        try:
-            new_password = rsahelper.decrypt(rsahelper.privkey, new_password)
-        except:
-            app.logger.warn("frontend doesn't encrypt new_password")
-        current_user.hash_password(new_password)
-    # 不能移动，先判断再提交。否则验证失败可能也会提交
-    if cellphone:
-        current_user.cellphone = cellphone
-    if email:
-        current_user.email = email
-    db.session.commit()
-    return jsonify({
-        'errcode': 0,
-        'reason': "Success",
-        "result":{
-            "userid": current_user.id,
-            "username":current_user.username,
-            "email": current_user.email,
-            "cellphone": current_user.cellphone
-        }
-    })
+        email = junior.get_purearg(email)
+    return jsonify(junior.user_infor_modify(username=current_user.username, encrypted=True, password=password,cellphone=cellphone,email=email,new_password=new_password))
 
 
-if __name__ == '__main__':
+def start():
     from tornado.wsgi import WSGIContainer
     from tornado.httpserver import HTTPServer
     from tornado.ioloop import IOLoop
+    from flask_cors import CORS
 
-    # set log
-    # handler = logging.FileHandler('flask2.log', encoding='UTF-8')
-    # .setLevel(logging.DEBUG)
-    # logging_format = logging.Formatter(
-    #     '%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(lineno)s - %(message)s')
-    # handler.setFormatter(logging_format)
-    # app.logger.addHandler(handler)
-
-    # create tornado webwrapper and start
+    CORS(app, supports_credentials=True)
     http_server = HTTPServer(WSGIContainer(app))
     http_server.listen(5000)
     IOLoop.instance().start()
     # app.run(host='0.0.0.0', port=5050)
+
+
+if __name__ == '__main__':
+    start()
