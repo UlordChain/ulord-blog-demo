@@ -1,4 +1,4 @@
-# coding=utf-8
+﻿# coding=utf-8
 # @File  : junior.py
 # @Author: PuJi
 # @Date  : 2018/5/14 0014
@@ -203,9 +203,14 @@ def blog_delete():
     if type(current_user) is dict:
         return jsonify(current_user)
     id = request.json.get('id')
-    if not id:
+    password = request.json.get('password')
+    if not id and not password:
         return return_result(60100)
-    return jsonify(junior.delete(id))
+    password = junior.decrypt(password)
+    print(password)
+    if not current_user.verify_password(password):
+        return jsonify(return_result(60003))
+    return jsonify(junior.delete(id, current_user.pay_password))
 
 
 @app.route('/blog/all/list',methods=['POST'])
