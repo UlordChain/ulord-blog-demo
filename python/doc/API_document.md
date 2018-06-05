@@ -14,6 +14,7 @@ This is a document of blog web's API.It services for front-end.
 - [Update 更新博客](#update--更新博客)
 - [Delete 删除博客](#delete--更新博客)
 - [List All Blog 获取博客](#list-all-blog--获取博客)
+- [List Blog By ID 根据获取博客](#list-blog-by-id--根据id获取博客)
 - [check isbought 检查博客是否付费](#check-isbought--检查博客是否付费)
 - [Pay blogs 支付博客](#pay-blogs-支付博客)
 - [Pay ADs 支付广告](#pay-ads-支付广告)
@@ -535,6 +536,66 @@ return:
             }
         ]
     }
+}
+```
+
+失败
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+example 示例
+```bash
+
+```
+## List Blog By ID 根据获取博客
+
+POST http://127.0.0.1:5000/blog/condition/id
+
+head:token
+
+args：json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|ids|ID列表|是|
+
+```python
+{
+    "ids":["3"]
+}
+```
+
+return:
+
+成功
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": [
+        {
+            "author": "uuui",
+            "claim_id": "d4bf1290eb6cd4ad7f1f699b555aeaf3c44d4170",
+            "content_type": ".txt",
+            "create_timed": "2018-05-29 09:37:53",
+            "create_timed_timestamp": 1527557873,
+            "currency": "UT",
+            "des": "des",
+            "enabled": true,
+            "id": 3,
+            "price": 0.2,
+            "status": 1,
+            "tags": [
+                "ul"
+            ],
+            "title": "uui action",
+            "update_timed": null,
+            "update_timed_timestamp": null
+        }
+    ]
 }
 ```
 

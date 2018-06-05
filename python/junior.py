@@ -16,15 +16,15 @@ from ulordapi.user import Junior
 log = logging.getLogger('webServer')
 
 junior = Junior(appkey="5d42b27e581c11e88b12f48e3889c8ab", secret="5d42b27f581c11e8bf63f48e3889c8ab")
-blog_config = {
-    'baseconfig':{
-        'config_file':'E:\ulord\ulord-blog-demo\config'
-    },
-    'logconfig':{
-        'log_file_path': "E:\ulord\ulord-blog-demo\junior.log"
-    }
-}
-junior.config_edit(blog_config)
+# blog_config = {
+#     'baseconfig':{
+#         'config_file':'E:\ulord\ulord-blog-demo\config'
+#     },
+#     'logconfig':{
+#         'log_file_path': "E:\ulord\ulord-blog-demo\junior.log"
+#     }
+# }
+# junior.config_edit(blog_config)
 
 junior.create_database('E:\ulord\ulord-blog-demo')
 
@@ -234,6 +234,22 @@ def blog_list():
     if not num:
         num = 10
     return jsonify(junior.queryresource(page, num))
+
+
+@app.route('/blog/condition/id',methods=['POST'])
+def blog_list_by_ID():
+    """
+    list blogs by ID
+
+    :return: blog list
+    """
+    current_user = auth_login_required()  # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    ids = request.json.get('ids')
+    if not ids and not isinstance(ids, list):
+        return jsonify(return_result())
+    return jsonify(junior.query_resourc_by_ID(ids))
 
 
 @app.route('/blog/isbought',methods=['POST'])
