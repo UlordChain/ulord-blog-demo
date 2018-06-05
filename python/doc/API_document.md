@@ -1,9 +1,9 @@
-﻿# API document
+﻿# py-ulord-api web API document
 
 This is a document of blog web's API.It services for front-end.
 
-## Table of Contents 目录 
-- [Introudction 说明](#getIntroudction-说明)
+## Table of Contents 目录
+- [Introudction 说明](#introudction-说明)
 - [Get Publickey 获取公钥](#get-publickey-获取公钥)
 - [test encrypt 测试加密](#test-encrypt-测试加密)
 - [Register 注册](#Register-注册)
@@ -11,6 +11,8 @@ This is a document of blog web's API.It services for front-end.
 - [Login 登录](#login----登录)
 - [Install Go](#logout----登出)
 - [Publish 发布博客](#publish--发布博客)
+- [Update 更新博客](#update--更新博客)
+- [Delete 删除博客](#delete--更新博客)
 - [List All Blog 获取博客](#list-all-blog--获取博客)
 - [check isbought 检查博客是否付费](#check-isbought--检查博客是否付费)
 - [Pay blogs 支付博客](#pay-blogs-支付博客)
@@ -19,7 +21,7 @@ This is a document of blog web's API.It services for front-end.
 - [List Personal Balance 列出个人余额](#list-personal-balance-列出个人余额)
 - [List Personal Published 列出个人发布过的资源](#list-personal-published-列出个人发布过的资源)
 - [List Personal Published num 列出个人发布过的资源数量](#list-personal-published-num-列出个人发布过的资源数量)
-- [List Personal Bought 列出个人购买过的资源](#list-personal-bought-列出个人购买过的资源)
+- [~~List Personal Bought 列出个人购买过的资源~~](#list-personal-bought-列出个人购买过的资源)
 - [List Billings detail 列出个人账单详细信息(收入和支出接口总和)](#list-billings-detail-列出个人账单详细信息收入和支出接口总和)
 - [List Billings 列出个人账单](#list-billings-列出个人账单)
 - [List User's Outgos 列出个人支出](#list-users-outgos-列出个人支出)
@@ -101,7 +103,7 @@ args:json
 
 ```python
 {
-	"password":"加密后的密文"
+    "password":"加密后的密文"
 }
 ```
 
@@ -152,10 +154,10 @@ args:json
 
 ```python
 {
-	"username":"test",
-	"password":"123",
-	"cellphone":"15278559846",
-	"email":"15574859643@163.com"
+    "username":"test",
+    "password":"123",
+    "cellphone":"15278559846",
+    "email":"15574859643@163.com"
 }
 ```
 
@@ -240,8 +242,8 @@ args:json
 
 ```python
 {
-	"username":"test",
-	"password":"123"
+    "username":"test",
+    "password":"123"
 }
 ```
 
@@ -348,11 +350,11 @@ args：json
 
 ```python
 {
-	"title":"the first blog",
-	"body":"This is a first blog.And it's just a test.",
-	"amount":0.02,
-	"tag":["test","first"],
-	"description":"This is a test blog."
+    "title":"the first blog",
+    "body":"This is a first blog.And it's just a test.",
+    "amount":0.02,
+    "tag":["test","first"],
+    "description":"This is a test blog."
 }
 ```
 
@@ -366,6 +368,105 @@ return:
     "result":{
         "id":数据库id,
         "claim_id":资源在链上的id,
+    }
+}
+```
+
+失败：
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+example 示例
+```bash
+
+```
+## Update  更新博客
+
+POST http://127.0.0.1:5000/blog/update
+
+head:token
+
+args：json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|id | 平台数据库ID |是|
+|password | 用户密码 |是|
+|title | 标题 |否|
+|body | 博客内容 |否|
+|amount | 定价 |否|
+|tag | 标签 |否|
+|description|描述|否|
+
+```python
+{
+    "id":"1",
+    "password":"123",
+    "title":"the first blog",
+    "body":"This is a first blog.And it's just a test.",
+    "amount":0.02,
+    "tag":["test","first"],
+    "description":"This is a test blog."
+}
+```
+
+return:
+
+成功：
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result":{
+        "id":数据库id,
+        "claim_id":资源在链上的id,
+    }
+}
+```
+
+失败：
+```python
+{
+    "errcode": 错误码,
+    "reason": "错误原因"
+}
+```
+example 示例
+```bash
+
+```
+## Delete  删除博客
+
+POST http://127.0.0.1:5000/blog/delete
+
+head:token
+
+args：json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|id | 平台数据库ID |是|
+|password | 用户密码 |是|
+
+```python
+{
+    "id":"1",
+    "password":"123"#(加密后的密码)
+}
+```
+
+return:
+
+成功：
+```python
+{
+    "errcode": 0,
+    "reason": "success",
+    "result": {
+        "num": 1
     }
 }
 ```
@@ -396,8 +497,8 @@ args：json
 
 ```python
 {
-	"page":1,
-	"num":10
+    "page":1,
+    "num":10
 }
 ```
 > 默认为每页10条数据，返回第一页
@@ -462,14 +563,14 @@ args：json
 
 ```python
 {
-	"claim_ids":[
-        	"ec3c93680884d8b1aee25242f64f79f8bd847c57",
-        	"a5b899fe01d633b6f0b809c4af2312524c081576",
-        	"25e48b12694b4704aeff32ba0a568c21ad8dd5d6",
-        	"e1b98bcc018950ac4684c663d0ea4fa9fc19543d",
-        	"e1b98bcc018950ac4684c663d0ea4fa9fc19543f",
-        	"2d4bbaf369464feeb90ac957af72a641f9a1bc9c"
-    	]
+    "claim_ids":[
+            "ec3c93680884d8b1aee25242f64f79f8bd847c57",
+            "a5b899fe01d633b6f0b809c4af2312524c081576",
+            "25e48b12694b4704aeff32ba0a568c21ad8dd5d6",
+            "e1b98bcc018950ac4684c663d0ea4fa9fc19543d",
+            "e1b98bcc018950ac4684c663d0ea4fa9fc19543f",
+            "2d4bbaf369464feeb90ac957af72a641f9a1bc9c"
+        ]
 }
 ```
 
@@ -517,8 +618,8 @@ args：json
 
 ```python
 {
-	"password":"123",
-	"claim_id":"ec3c93680884d8b1aee25242f64f79f8bd847c57"
+    "password":"123",
+    "claim_id":"ec3c93680884d8b1aee25242f64f79f8bd847c57"
 }
 ```
 
@@ -563,8 +664,8 @@ args：json
 
 ```python
 {
-	"author":"justin",
-	"claim_id":"ec3c93680884d8b1aee25242f64f79f8bd847c57"
+    "author":"justin",
+    "claim_id":"ec3c93680884d8b1aee25242f64f79f8bd847c57"
 }
 ```
 
@@ -605,12 +706,12 @@ return:
 成功
 ```python
 {
-	'errcode':0,
+    'errcode':0,
         'reason':'success',
         'result':{
-    	    "username": "test",
+            "username": "test",
             "cellphone":"15278559846",
-			"email":"15574859643@163.com"
+            "email":"15574859643@163.com"
             }
 }
 ```
@@ -671,7 +772,6 @@ args:json
 | ----  | :-----:  |  :----:  |
 |page|页数|否|
 |num|每页显示数|否|
-|category|查询条件|否
 
 ```python
 {
@@ -680,7 +780,6 @@ args:json
     "category":0
 }
 ```
-> 默认为每页10条数据，返回第一页。查询条件为0-消费支出，1-广告收入，其他-所有
 
 return:
 
@@ -749,13 +848,13 @@ example 示例
 ```bash
 
 ```
-## List Personal Bought 列出个人购买过的资源
+## ~~List Personal Bought 列出个人购买过的资源~~
 
-POST http://127.0.0.1:5000/user/bought
+~~POST http://127.0.0.1:5000/user/bought~~
 
-head:token
+~~head:token~~
 
-args:json
+~~args:json~~
 
 | arg      | comment   |  是否必填  |
 | ----  | :-----:  |  :----:  |
@@ -895,10 +994,23 @@ example 示例
 ```
 ## List Billings 列出个人账单
 
-GET http://127.0.0.1:5000/user/billings/
+POST http://127.0.0.1:5000/user/billings/
 
 head:token
 
+args:json
+
+| arg      | comment   |  是否必填  |
+| ----  | :-----:  |  :----:  |
+|sdate|开始日期|是|
+|edate|结束日期|是|
+
+```python
+{
+    "sdate":"2018-03-15",
+    "edate":"2018-03-16"
+}
+```
 return:
 
 成功
@@ -954,14 +1066,22 @@ args:json
 | ----  | :-----:  |  :----:  |
 |page|页数|否|
 |num|每页显示数|否|
+|category|类型|否|
+|sdate|开始日期|是|
+|edate|结束日期|是|
 
 ```python
 {
-	"page":1,
-	"num":2
+    "page":1,
+    "num":2,
+    "category":2，
+    "sdate":"2018-03-15",
+    "edate":"2018-03-16"
 }
 ```
-> 默认为每页10条数据，返回第一页
+> 默认为每页10条数据，返回第一页。类型为2
+
+> 类型0-为资源，1-为广告，2-为所有
 
 return:
 
@@ -1024,14 +1144,22 @@ args:json
 | ----  | :-----:  |  :----:  |
 |page|页数|否|
 |num|每页显示数|否|
+|category|类型|否|
+|sdate|开始日期|是|
+|edate|结束日期|是|
 
 ```python
 {
-	"page":1,
-	"num":2
+    "page":1,
+    "num":2,
+    "category":2,
+    "sdate":"2018-03-15",
+    "edate":"2018-03-16"
 }
 ```
-> 默认为每页10条数据，返回第一页
+> 默认为每页10条数据，返回第一页。类型为2
+
+> 类型0-为资源，1-为广告，2-为所有
 
 return:
 
@@ -1137,11 +1265,11 @@ args：json
 
 ```python
 {
-	"username":"test1",
-	"password":"123",
-	"cellphone":"15574257777",
-	"email":"7778547888@163.com",
-	"new_password":"111"
+    "username":"test1",
+    "password":"123",
+    "cellphone":"15574257777",
+    "email":"7778547888@163.com",
+    "new_password":"111"
 }
 ```
 
@@ -1191,8 +1319,8 @@ example 示例
 ~~return:~~
 ```python
 {
-	"result": 1/0,
-	"msg": "None/exception"
+    "result": 1/0,
+    "msg": "None/exception"
 }
 ```
 
@@ -1211,8 +1339,8 @@ example 示例
 ~~return:~~
 ```python
 {
-	"result": 1/0,
-	"msg": "None/exception"
+    "result": 1/0,
+    "msg": "None/exception"
 }
 ```
 
@@ -1267,6 +1395,38 @@ example 示例
     20202:{'errcode':20202,'reason':'资源消费失败.'},
     20203:{'errcode':20203,'reason':'查询余额失败.'},
     20204:{'errcode':20204,'reason':'创建钱包失败.'},
+
+    #钱包错误
+    https://github.com/UlordChain/Ulord-platform/blob/master/Uwallet/uwallet/errors.py#L28
+    '51000': 'command not found',
+    '51001': 'password error',
+    '51002': 'password cannot be empty',
+    '51003': 'user not exists',
+    '51004': 'user already exists',
+    '51005': 'invalid claim_id',
+    '51006': "claim not find",
+    '51007': "the bid must > 0",
+    '51008': "the tx_fee must >= 0",
+    '51009': "val sand metadata can't both empty",
+    '51010': 'It cannot be converted to int'
+
+    '50000': "Unknown Error",
+    '52001': 'payment Failed',
+    '52002': "can't find fee in the claim.",  #  优化
+    '52003': 'permission denied',
+    '52004': 'Not enough funds',
+    '52005': 'broadcast transaction fail',
+    '52006': 'signature transaction fail',
+    '52007': 'nout is None',
+    '52008': 'operation is too frequent: it is necessary to wait for the transaction confirmation',
+    '52009': 'get UTXO fail',
+    '52010': 'No extra funds paid fee',
+    '52011': 'Dont know which claim to update, because the same name claim > 1',
+    '52012': 'cannot save field',
+    '52013': 'Temporary dissupport',
+
+    '53000': 'Decode claim value error',
+    '53001': 'invalid claim address',
 
     # 应用服务级错误码
     # 1、DB查询验证

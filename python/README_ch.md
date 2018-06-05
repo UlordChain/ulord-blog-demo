@@ -28,21 +28,20 @@
 > * 配置简单
 
 ## 安装
-### 安装 python 和 pip
-首先安装 python2.7.14 可以在[官网](https://www.python.org/)上下载
+### 安装 python 和 [ulord平台SDK](https://github.com/UlordChain/py-ulord-api)
+首先安装 python2.7.14 可以在[官网](https://www.python.org/downloads/release/python-2714/)上下载
 
-然后安装pip来管理你的python包
+然后克隆[ulord平台SDK](https://github.com/UlordChain/py-ulord-api)项目并安装。
 
-第三包使用pip来安装所需要的软件包
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/UlordChain/py-ulord-api.git
+cd py-ulord-api
+python setup.py install
 ```
 
 ## 运行
 ```bash
-python DBHelper\Manager.py
-
-python server.py
+python junior.py
 ```
 ## 计划清单
 - [x] 添加计划清单

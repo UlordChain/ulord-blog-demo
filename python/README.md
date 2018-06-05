@@ -27,22 +27,20 @@ This module is ulord-blog-demo's rear-end,completed by python2.7.It saves the ti
 > * easy config
 
 ## install
-### install python and pip
-firstly you need to install python2.7.14 from the [website](https://www.python.org/)
+### install python and [py-ulord-api](https://github.com/UlordChain/py-ulord-api)
+firstly you need to install python2.7.14 from the [website](https://www.python.org/downloads/release/python-2714/)
 
-secondly install pip to manager your python packages
+secondly clone [SDK program](https://github.com/UlordChain/py-ulord-api) and install.
 
-thirdly using pip to install packages
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/UlordChain/py-ulord-api.git
+cd py-ulord-api
+python setup.py install
 ```
 
 ## run
 ```bash
-python dbHelper\dbManager.py
-
-python server.py
-
+python junior.py
 ```
 ## TODO
 - [x] add TODO list
