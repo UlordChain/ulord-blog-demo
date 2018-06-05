@@ -8,10 +8,7 @@ from uuid import uuid1
 
 from flask import request, g, jsonify
 
-from ulordapi import utils
-from ulordapi.manage import app, db, User
-from ulordapi.up import ulord_helper
-from ulordapi.config import ulordconfig
+from ulordapi.manage import app, User
 from ulordapi.errcode import return_result
 from ulordapi.user import Junior
 
@@ -67,6 +64,18 @@ def get_pubkey():
         return jsonify(return_result(0, result={'password': junior.get_purearg(message)}))
 
 
+@app.route('/user/encrypt',methods=['POST'])
+def encrypt():
+    messages = request.json.get("messages")
+    result = {}
+    for message in messages:
+        message = message.encode('utf-8')
+        result.update({
+            message:junior.rsahelper._encry(message)
+        })
+    return jsonify(result)
+
+
 @app.route('/user/regist',methods=['POST'])
 def regist():
     """
@@ -81,7 +90,7 @@ def regist():
     if username is None or password is None:
         # missing arguments
         return jsonify(return_result(60100))
-    args = junior.get_purearg([username, password, cellphone, email])
+    args = junior.decrypt([username, password, cellphone, email])
     if args:
         result = junior.user_regist(username=args[0],password=args[1],cellphone=args[2],email=args[3])
         return jsonify(result)
@@ -114,7 +123,7 @@ def login():
             'errcode': 60100,
             'reason': "缺少参数"
         })
-    username = junior.get_purearg(username)
+    username = junior.decrypt(username)
     return jsonify(junior.user_login(username=username, password=password,encrypted=True))
 
 
@@ -136,7 +145,7 @@ def blog_publish():
     """
     publish blog
 
-    :return: claim id
+    :return: claim id,ulord-platform DB ID
     """
     current_user = auth_login_required() # check token
     if type(current_user) is dict:
@@ -150,10 +159,53 @@ def blog_publish():
     # print(body)
     # print(body_hash)
     if body_hash and body_hash.get(body):
-        return jsonify(junior.user_publish(title=title, udfshash=body_hash.get(body),amount=amount,tags=tags,des=description,
+        return jsonify(junior.resource_publish(title=title, udfshash=body_hash.get(body),amount=amount,tags=tags,des=description,
                                            usercondition={'usertoken':current_user.token}))
     else:
         return jsonify(return_result(errcode=60400))
+
+
+@app.route('/blog/update',methods=['POST'])
+def blog_update():
+    """
+    update blog
+
+    :return: claim id,ulord-platform DB id
+    """
+    current_user = auth_login_required() # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    id = request.json.get('id')
+    if id:
+        try:
+            id = str(id)
+        except:
+            return return_result(60100)
+    pay_password = request.json.get('password')
+    if not id and not pay_password:
+        return  jsonify(return_result(60100))
+    title = request.json.get('title')
+    body = request.json.get('body')
+    amount = request.json.get('amount')
+    tags = request.json.get('tag')
+    description = request.json.get('description')
+
+    return jsonify(junior.resource_update(id=id, pay_password=pay_password,encrypted=True,title=title,body=body,price=amount,tags=tags,des=description))
+
+
+@app.route('/blog/delete', methods=['POST'])
+def blog_delete():
+    """
+    delete blog
+    :return: errcode.You can query from the errcode dict.
+    """
+    current_user = auth_login_required() # check token
+    if type(current_user) is dict:
+        return jsonify(current_user)
+    id = request.json.get('id')
+    if not id:
+        return return_result(60100)
+    return jsonify(junior.delete(id))
 
 
 @app.route('/blog/all/list',methods=['POST'])
@@ -216,7 +268,7 @@ def add_views():
             'reason': '缺少参数'
         })
     # add blog views
-    return jsonify(junior.user_resouce_views(title))
+    return jsonify(junior.resouce_views(title))
 
 
 @app.route('/pay/blogs',methods=['POST'])
@@ -236,7 +288,7 @@ def pay_blogs():
             'errcode':60100,
             'reason':"缺少参数"
         })
-    return jsonify(junior.user_pay_resources(current_user, claim_id, password, encrypted=True))
+    return jsonify(junior.pay_resources(current_user, claim_id, password, encrypted=True))
 
 
 @app.route('/pay/ads',methods=['POST'])
@@ -256,7 +308,7 @@ def pay_ads():
             'errcode': 60100,
             'reason': "缺少参数"
         })
-    return jsonify(junior.user_pay_ads(current_user.wallet, claim_id, authorname))
+    return jsonify(junior.pay_ads(current_user.wallet, claim_id, authorname))
 
 
 @app.route('/user/info',methods=['GET'])
@@ -301,13 +353,10 @@ def get_userpublished():
     except:
         page = 1
         num = 10
-        category = 2  # 0-blog,1-ads,2-all
     if not page:
         page = 1
     if not num:
         num = 10
-    if not category or category!=0 or category!=1 :
-        category = 2  # 0-blog,1-ads,2-all
     return jsonify(junior.queryuserpublished(current_user.wallet, page, num))
 
 
@@ -322,7 +371,7 @@ def get_userpublishednum():
     return jsonify(junior.ulord_published_num(current_user.wallet))
 
 
-@app.route('/user/billings',methods=['GET'])
+@app.route('/user/billings',methods=['POST'])
 def get_billings():
     """
     query user's billing
@@ -445,9 +494,9 @@ def modify_userinfo():
             'reason': '缺少参数'
         })
     if cellphone:
-        cellphone = junior.get_purearg(cellphone)
+        cellphone = junior.decrypt(cellphone)
     if email:
-        email = junior.get_purearg(email)
+        email = junior.decrypt(email)
     return jsonify(junior.user_infor_modify(username=current_user.username, encrypted=True, password=password,cellphone=cellphone,email=email,new_password=new_password))
 
 
