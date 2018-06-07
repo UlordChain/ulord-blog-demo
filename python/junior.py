@@ -25,8 +25,8 @@ junior = Junior(appkey="5d42b27e581c11e88b12f48e3889c8ab", secret="5d42b27f581c1
 #     }
 # }
 # junior.config_edit(blog_config)
-
-junior.create_database('E:\ulord\ulord-blog-demo')
+dbpath = os.getcwd()
+junior.create_database(dbpath)
 
 
 def auth_login_required():
@@ -156,8 +156,6 @@ def blog_publish():
     tags = request.json.get('tag')
     description = request.json.get('description')
     body_hash = junior.udfs_upload([body])
-    # print(body)
-    # print(body_hash)
     if body_hash and body_hash.get(body):
         return jsonify(junior.resource_publish(title=title, udfshash=body_hash.get(body),amount=amount,tags=tags,des=description,
                                            usercondition={'usertoken':current_user.token}))
@@ -207,7 +205,6 @@ def blog_delete():
     if not id and not password:
         return return_result(60100)
     password = junior.decrypt(password)
-    print(password)
     if not current_user.verify_password(password):
         return jsonify(return_result(60003))
     return jsonify(junior.delete(id, current_user.pay_password))
@@ -522,16 +519,16 @@ def modify_userinfo():
 
 
 def start():
-    from tornado.wsgi import WSGIContainer
-    from tornado.httpserver import HTTPServer
-    from tornado.ioloop import IOLoop
+    # from tornado.wsgi import WSGIContainer
+    # from tornado.httpserver import HTTPServer
+    # from tornado.ioloop import IOLoop
     from flask_cors import CORS
 
     CORS(app, supports_credentials=True)
-    http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(5000)
-    IOLoop.instance().start()
-    # app.run(host='0.0.0.0', port=5050)
+    # http_server = HTTPServer(WSGIContainer(app))
+    # http_server.listen(5000)
+    # IOLoop.instance().start()
+    app.run(host='0.0.0.0', port=5000)
 
 
 if __name__ == '__main__':
