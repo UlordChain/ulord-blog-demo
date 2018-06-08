@@ -4,24 +4,48 @@ var bodyParser = require('body-parser');
 var router = express.Router();
 var URL = require('url');
 
+var api = require('./api.js');
+
+
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', function(req, res, next) {
   res.redirect('/login');
 });
+console.log(api.getPublicKey());
+/*--------------------获取公匙---------------------*/
+router.post('/password', function(req, res, next) {
+  var options = {
+    url: api.getPublicKey(),
+    method: 'GET',
+    json: true,
+    headers: {
+      "content-type": "application/json"
+    }
+  }
+  console.log(options);
+  console.log('获取公匙')
+  request(options, function(error, response, data) {
+    console.log(data, error);
+    res.json({
+      code: data.errcode,
+      publicKey: data.result.pubkey
+    })
+  })
+})
 
 /*---------------------登录------------------------*/
 
-router.get('/login', function (req, res, next) {
+router.get('/login', function(req, res, next) {
   res.render('login', {
     code: ''
   });
 });
 
-router.post('/login', function (req, res) {
+router.post('/login', function(req, res) {
   var username = req.body.username;
   var userpass = req.body.password;
   var options = {
-    url: 'http://192.168.14.240:5050/user/login',
+    url: api.login(),
     method: 'POST',
     json: true,
     headers: {
@@ -33,7 +57,7 @@ router.post('/login', function (req, res) {
     }
   }
   console.log('登录请求开始');
-  request(options, function (error, response, data) {
+  request(options, function(error, response, data) {
     console.log(data)
     if (data.errcode == '0') {
       // req.session.user = data;   
@@ -55,19 +79,19 @@ router.post('/login', function (req, res) {
 
 /*---------------------注册------------------------*/
 
-router.get('/register', function (req, res, next) {
+router.get('/register', function(req, res, next) {
   res.render('register', {
     code: ''
   });
 });
 
-router.post('/register', function (req, res) {
+router.post('/register', function(req, res) {
   var username = req.body.username;
   var userpass = req.body.password;
   var email = req.body.email;
   var phonenumber = req.body.phonenumber;
   var options = {
-    url: 'http://192.168.14.240:5050/user/regist',
+    url: api.register(),
     method: 'POST',
     json: true,
     headers: {
@@ -81,27 +105,13 @@ router.post('/register', function (req, res) {
     }
   }
   console.log('注册请求开始');
-  request(options, function (error, response, data) {
+  request(options, function(error, response, data) {
     console.log(data, error);
     if (data.errcode == '0') {
       res.cookie('token', data.result.token, {
         expires: new Date(Date.now() + 900000),
         httpOnly: true
       });
-      var options = {
-        url: 'http://192.168.14.240:5050/user/regist',
-        method: 'POST',
-        json: true,
-        headers: {
-          "content-type": "application/json",
-        },
-        body: {
-          username: username,
-          password: userpass,
-          cellphone: phonenumber,
-          email: email
-        }
-      }
       res.json({
         code: data.errcode,
         token: data.result.token
@@ -116,10 +126,10 @@ router.post('/register', function (req, res) {
 
 /*---------------------活动------------------------*/
 
-router.post('/activity', function (req, res2, next) {
+router.post('/activity', function(req, res2, next) {
   console.log("活动请求开始")
   var options = {
-    url: 'http://192.168.14.240:5050/user/activity',
+    url: api.activity(),
     method: 'GET',
     json: true,
     headers: {
@@ -127,9 +137,8 @@ router.post('/activity', function (req, res2, next) {
       "token": req.cookies.token
     },
   }
-  request(options, function (error, response, data) {
-    console.log(data);
-    console.log('code嘛',data.errcode);
+  request(options, function(error, response, data) {
+    console.log('送币', data);
     if (data.errcode == '0') {
       console.log('成功')
       res2.json({
@@ -145,8 +154,10 @@ var jsonParse = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({
   extended: false
 })
-router.get('/home', function (req, res, next) {
+router.get('/home', function(req, res, next) {
   console.log("ajax get列表请求开始")
+  console.log(url);
+  console.log('token', req.cookies.token);
   var url = URL.parse(req.url).query;
   var nav = URL.parse(req.url).pathname;
   console.log(url, nav);
@@ -155,8 +166,9 @@ router.get('/home', function (req, res, next) {
   if (req.query.page) {
     page = req.query.page;
   }
+
   var options = {
-    url: 'http://192.168.14.240:5050/blog/all/list',
+    url: api.getBlogList(),
     method: 'POST',
     json: true,
     headers: {
@@ -167,54 +179,71 @@ router.get('/home', function (req, res, next) {
       page: page
     }
   }
+
   console.log('get列表请求开始');
-  request(options, function (error, response, data) {
+  request(options, function(error, response, data) {
+    console.log(data)
     if (data.errcode == '0') {
       console.log('列表数据', data.result);
       if (url) {
         url = url.replace(/\&page=[0-9]+/g, '');
       }
       var page_total = Math.ceil(data.result.total / 10); //总页数
-      var claimlist = [];
-      data.result.data.forEach(function (item, index) {
-        claimlist.push(item.claim_id);
-      })
-      var options2 = {
-        url: 'http://192.168.14.240:5050/blog/isbought',
-        method: 'POST',
-        json: true,
-        headers: {
-          "content-type": "application/json",
-          "token": req.cookies.token
-        },
-        body: {
-          claim_ids: claimlist
+      var claimlist = [],
+        isPayList = [];
+      if (page_total !== 0) {
+        data.result.records.forEach(function(item, index) {
+          claimlist.push(item.claim_id);
+        })
+        console.log("claimlist", claimlist);
+        var options2 = {
+          url: api.isbought(),
+          method: 'POST',
+          json: true,
+          headers: {
+            "content-type": "application/json",
+            "token": req.cookies.token
+          },
+          body: {
+            claim_ids: claimlist
+          }
         }
+
+        request(options2, function(error, response, data2) {
+
+          console.log('是否有哈希获取', data2)
+          if (data2.errcode == '0') {
+            for (key in data2.result) {
+              isPayList.unshift(data2.result[key])
+            }
+            console.log(isPayList);
+            res.render('home', {
+              page: page,
+              data: data.result.records,
+              error: '',
+              total: page_total,
+              url: url,
+              nav: nav.replace(/\//g, ''),
+              data2: data2.result
+            });
+
+          }
+        })
+      } else {
+        res.render('home', {
+          page: page,
+          data: data.result.records,
+          error: '',
+          total: page_total,
+          url: url,
+          nav: nav.replace(/\//g, ''),
+          data2: {}
+        });
+
       }
 
-      request(options2, function (error, response, data2) {
-
-        console.log('是否有哈希获取', data2.result)
-        if (data2.errcode == '0') {
-
-          //  for(key in  data2.result) {
-          //    isPayList.unshift(data2.result[key])
-          //  }
-          //   console.log(isPayList);
-          res.render('home', {
-            page: page,
-            data: data.result.data,
-            error: '',
-            total: page_total,
-            url: url,
-            nav: nav.replace(/\//g, ''),
-            data2: data2.result
-          });
-
-        }
-      })
     } else {
-      console.log(data);
+      console.log('请求失败');
     }
   })
 });
@@ -222,7 +251,7 @@ router.get('/home', function (req, res, next) {
 //   console.log('post列表请求开始');
 //   console.log(req.body);
 //   var options = {
-//     url: 'http://192.168.14.40:5000/blog/all/list',
+//     url: 'http://http://192.168.14.40:5000/blog/all/list',
 //     method: 'POST',
 //     json: true,
 //     contentType: json,
@@ -243,13 +272,13 @@ router.get('/home', function (req, res, next) {
 
 /*--------------------发布------------------------*/
 
-router.get('/release', function (req, res, next) {
+router.get('/release', function(req, res, next) {
   res.render('release');
 });
-router.post('/release', urlencodedParser, function (req, res, next) {
+router.post('/release', urlencodedParser, function(req, res, next) {
   console.log(req.body);
   var options = {
-    url: 'http://192.168.14.240:5050/blog/publish',
+    url: api.publish(),
     method: 'POST',
     json: true,
     headers: {
@@ -265,7 +294,7 @@ router.post('/release', urlencodedParser, function (req, res, next) {
     }
   }
   console.log('发布请求开始');
-  request(options, function (error, response, data) {
+  request(options, function(error, response, data) {
     console.log(data);
     if (data.errcode == '0') {
       res.json({
@@ -282,10 +311,10 @@ router.post('/release', urlencodedParser, function (req, res, next) {
 /*---------------------支付------------------------*/
 
 console.log('支付接口');
-router.post('/pay', urlencodedParser, function (req, res, next) {
+router.post('/pay', urlencodedParser, function(req, res, next) {
   console.log(req.body);
   var options = {
-    url: 'http://192.168.14.240:5050/pay/blogs',
+    url: api.pay(),
     method: 'POST',
     json: true,
     headers: {
@@ -298,11 +327,11 @@ router.post('/pay', urlencodedParser, function (req, res, next) {
     }
   }
   console.log('支付请求开始1');
-  request(options, function (error, response, data) {
+  request(options, function(error, response, data) {
     console.log(data);
     if (data.errcode == '0') {
       res.json({
-        hash: data.result.ipfs_hash,
+        hash: data.result.udfs_hash,
         code: data.errcode
       })
       console.log(data);
@@ -316,10 +345,10 @@ router.post('/pay', urlencodedParser, function (req, res, next) {
 
 /*---------------------广告------------------------*/
 
-router.post('/ads', urlencodedParser, function (req, res, next) {
+router.post('/ads', urlencodedParser, function(req, res, next) {
   console.log(req.body);
   var options = {
-    url: 'http://192.168.14.240:5050/pay/ads',
+    url: api.payAds(),
     method: 'POST',
     json: true,
     headers: {
@@ -332,11 +361,11 @@ router.post('/ads', urlencodedParser, function (req, res, next) {
     }
   }
   console.log('支付请求开始');
-  request(options, function (error, response, data) {
+  request(options, function(error, response, data) {
     console.log(data);
     if (data.errcode == '0') {
       res.json({
-        hash: data.result.ipfs_hash,
+        hash: data.result.udfs_hash,
         code: 1
       })
       console.log(data);
@@ -354,12 +383,12 @@ router.post('/ads', urlencodedParser, function (req, res, next) {
 
 /*---------------------文章详情------------------------*/
 
-router.get('/details', function (req, res, next) {
+router.get('/details', function(req, res, next) {
   // var url = URL.parse(req.url).query;
   // var idValue = qs.parse(url)['id']
   res.render('details');
 });
-router.post('/details', urlencodedParser, function (req, res, next) {
+router.post('/details', urlencodedParser, function(req, res, next) {
   console.log(req.body.data)
   console.log(Utf8ArrayToStr(req.body.data));
   res.json('/details', {
@@ -369,18 +398,17 @@ router.post('/details', urlencodedParser, function (req, res, next) {
 
 /*---------------------修改个人信息----------------*/
 
-router.post('/modify', function (req, res, next) {
+router.post('/modify', function(req, res, next) {
   var username = req.body.username;
   var password = req.body.password;
   var email = req.body.email;
   var cellphone = req.body.cellphone;
   var new_password = req.body.new_password;
   console.log("修改个人信息开始")
-  console.log(username, password, email, cellphone, new_password);
-  console.log('用户名', username)
+  console.log(password, email, cellphone, new_password);
   console.log('原始密码', password)
   var options = {
-    url: 'http://192.168.14.240:5050/user/modify',
+    url: api.modify(),
     method: 'POST',
     json: true,
     headers: {
@@ -388,14 +416,14 @@ router.post('/modify', function (req, res, next) {
       "token": req.cookies.token
     },
     body: {
-      username: username,
       password: password,
       email: email,
       cellphone: cellphone,
       new_password: new_password
     }
   }
-  request(options, function (error, response, data) {
+  request(options, function(error, response, data) {
+    console.log(data);
     res.json({
       code: data.errcode
     })
@@ -405,126 +433,267 @@ router.post('/modify', function (req, res, next) {
 
 /*---------------------广告------------------------*/
 
-router.get('/info', function (req, res, neex) {
+router.get('/info', function(req, res, neex) {
   var options = {
-    url: 'http://192.168.14.240:5050/user/info',
+    url: api.info(),
     method: 'GET',
     json: true,
     headers: {
       "token": req.cookies.token
     },
   }
-  console.log('个人信息请求开始');
-  request(options, function (error, response, data) {
-    console.log(data);
+  console.log('个人信息请求开始', req.cookies.token);
+  request(options, function(error, response, data) {
+    console.log('个人信息', data);
     if (data.errcode == 0) {
-      var options2 = {
-        url: 'http://192.168.14.240:5050/user/billings',
-        method: 'GET',
-        json: true,
-        headers: {
-          "token": req.cookies.token
-        },
+        console.log('data7\<br\>')
+        res.render('info',{
+          code: data.errcode,
+          data: data.result,
+        })
       }
-      console.log('两个列表');
-      request(options2, function (error, response, data2) {
-        console.log(data2);
-        if (data2.errcode == 0) {
-          var balance = {
-            url: 'http://192.168.14.240:5050/user/balance',
-            method: 'GET',
-            json: true,
-            headers: {
-              "token": req.cookies.token
-            },
-          }
-          console.log('总金额');
-          request(balance, function (error, response, data3) {
-            console.log(data3);
-            if (data3.errcode == 0) {
-              var author = {
-                url: 'http://192.168.14.240:5050/user/billings/author',
-                method: 'post',
-                json: true,
-                headers: {
-                  "token": req.cookies.token
-                },
-              }
-              console.log('作者');
-              request(author, function (error, response, data4) {
-                console.log('000',data4);
-                if (data4.errcode == 0) {
-                  var customer = {
-                    url: 'http://192.168.14.240:5050/user/billings/customer',
-                    method: 'post',
-                    json: true,
-                    headers: {
-                      "token": req.cookies.token
-                    },
-                  }
-                  console.log('消费者');
-                  request(customer, function (error, response, data5) {
-                    console.log(data5.result.records);
-                    if (data5.errcode == 0) {
-                      var publish = {
-                        url: 'http://192.168.14.240:5050/user/published',
-                        method: 'POST',
-                        json: true,
-                        headers: {
-                          "token": req.cookies.token,
-                          "content-type": "application/json",
-                        },
-                        body:{
-                          page: 1
-                        }
-                      }
-                      console.log('发布的')
-                    }
-                    request(publish, function(error, response, data6) {
-                      console.log(data6.result);
-                      if(data6.errcode == 0) {
-                        var bought = {
-                          url: 'http://192.168.14.240:5050/user/bought',
-                          method: 'POST',
-                          json: true,
-                          headers: {
-                            "token": req.cookies.token,
-                            "content-type": "application/json",
-                          },
-                          body: {
-                            page: 1
-                          }
-                        }
-                        console.log('购买的')
-                        request(bought, function (error, response, data7) {
-                          console.log(data7.result)
-                          if (data7.errcode == 0) {
-                            res.render('info', {
-                              data: data.result,
-                              data2: data2.result,
-                              data3: data3.result,
-                              data4: data4.result,
-                              data5: data5.result, 
-                              data6: data6.result, 
-                              data7: data7.result, 
-                            })
-                          }
-                        })
-                      }
-                    })
-                  })
-                }
-              })
-            }
-          })
-        }
+    })
+  })
+    
+router.get('/balance', function(req, res, next) {
+  var options = {
+    url: api.balance(),
+    method: 'get',
+    json: true,
+    headers: {
+      "token": req.cookies.token,
+    }
+  }
+  console.log("获取余额接口开始");
+  request(options, function(error, response, data) {
+    console.log("个人余额", data)
+    if(data.errcode == 0) {
+      res.json({
+        "code": data.errcode,
+        "data": data.result
       })
     }
   })
-});
+})
 
+router.post('/billings', function(req, res, next) {
+  var options = {
+    url: api.billings(),
+    method: 'post',
+    json: true,
+    headers: {
+      "token": req.cookies.token,
+    },
+    body: {
+      "sdate": req.body.sdate,
+      "edate": req.body.edate
+    }
+  }
+  console.log("获取账单总额接口开始");
+  request(options, function(error, response, data) {
+    console.log("账单总额", data)
+    if(data.errcode == 0) {
+      res.json({
+        "code": data.errcode,
+        "data": data.result
+      })
+    }
+  })
+})
 
-router.get('/a', function (req, res, next) {
-  res.render('a');
+router.post('/outgo', function(req, res, next) {
+  var options = {
+    url: api.customer(),
+    method: 'post',
+    json: true,
+    headers: {
+      "token": req.cookies.token,
+    },
+    body: {
+      "sdate": req.body.sdate,
+      "edate": req.body.edate,
+      "page":  req.body.page,
+    }
+  }
+  console.log("获取支出账单接口开始");
+  request(options, function(error, response, data) {
+    console.log("支出账单", data)
+    if(data.errcode == 0) {
+      res.json({
+        "code": data.errcode,
+        "data": data.result
+      })
+    }
+  })
+})
+
+router.post('/income', function(req, res, next) {
+  var options = {
+    url: api.author(),
+    method: 'post',
+    json: true,
+    headers: {
+      "token": req.cookies.token,
+    },
+    body: {
+      "sdate": req.body.sdate,
+      "edate": req.body.edate,
+      "page":  req.body.page,
+    }
+  }
+  console.log("获取收入账单接口开始");
+  request(options, function(error, response, data) {
+    console.log("收入账单", data)
+    if(data.errcode == 0) {
+      res.json({
+        "code": data.errcode,
+        "data": data.result
+      })
+    }
+  })
+})
+
+router.post('/published', function(req, res, next) {
+  var options = {
+    url: api.published(),
+    method: 'post',
+    json: true,
+    headers: {
+      "token": req.cookies.token,
+    },
+    body: {
+      "sdate": req.body.sdate,
+      "edate": req.body.edate,
+      "page":  req.body.page,
+    }
+  }
+  console.log("已发布资源");
+  request(options, function(error, response, data) {
+    console.log("已发布资源", data)
+    if(data.errcode == 0) {
+      res.json({
+        "code": data.errcode,
+        "data": data.result
+      })
+    }
+  })
+})
+
+router.post('/delete', function(req, res, next) {
+  var options = {
+    url: api.delete(),
+    method: 'post',
+    json: true,
+    headers: {
+      "token": req.cookies.token,
+    },
+    body: {
+      "id": req.body.id,
+      "password": req.body.password,
+    }
+  }
+  console.log("删除资源");
+  request(options, function(error, response, data) {
+    console.log("删除资源", data)
+    if(data.errcode == 0) {
+      res.json({
+        "code": data.errcode,
+        "data": data.result
+      })
+    }
+  })
+})
+
+router.post('/getDetails', function(req, res, next) {
+  console.log(req.body.id);
+  var options = {
+    url: api.getDetails(),
+    method: 'post',
+    json: true,
+    headers: {
+      "token": req.cookies.token,
+    },
+    body: {
+      "ids": [req.body.id]
+    }
+  }
+  console.log("获取文章详情");
+  request(options, function(error, response, data) {
+    console.log("获取文章详情", data)
+    if(data.errcode == 0) {
+      res.json({
+        "code": data.errcode,
+        "data": data.result
+      })
+    }
+  })
+})
+
+router.post('/isbought', function(req, res, next) {
+var options = {
+  url: api.isbought(),
+  method: 'POST',
+  json: true,
+  headers: {
+    "content-type": "application/json",
+    "token": req.cookies.token
+  },
+  body: {
+    claim_ids: [req.body.id],
+  }
+}
+
+request(options, function(error, response, data) {
+
+  console.log('是否有哈希获取', data)
+  if (data.errcode == '0') {
+    res.json({
+      code: data.errcode,
+      data: data.result
+    })
+  }
+})
+})
+
+router.post('/update', urlencodedParser, function(req, res, next) {
+  console.log(req.body);
+  var options = {
+    url: api.update(),
+    method: 'POST',
+    json: true,
+    headers: {
+      "content-type": "application/json",
+      "token": req.cookies.token
+    },
+    body: {
+      title: req.body.title,
+      body: req.body.body,
+      amount: req.body.amount,
+      tag: req.body.tag,
+      description: req.body.description,
+      id: req.body.id,
+      password: req.body.password
+    }
+  }
+
+  console.log('修改文章请求开始');
+  request(options, function(error, response, data) {
+    console.log(data);
+    if (data.errcode == '0') {
+      res.json({
+        code: 1
+      });
+    } else if (data.msg == "Insufficient amount") {
+      res.json({
+        code: -2
+      });
+    }
+  })
+})
+
+router.get('/update', function(req, res, next) {
+  res.render('update',{
+
+  });
 })
 module.exports = router;
