@@ -125,3 +125,4 @@ venv.bak/
 .zip
 .history
 .vscode
+node_module/
