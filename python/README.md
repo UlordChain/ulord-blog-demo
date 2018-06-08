@@ -8,7 +8,7 @@ Use ulord platform to create a single blog.
 - [Instructions](#Instructions)
 - [Features](#Features)
 - [install](#install)
-  - [install python and pip](#install-python-and-pip)
+  - [install python and pip](#install-python-and-py-ulord-api)
 - [run](#run)
 - [TODO](#todo)
 - [API](#api)
