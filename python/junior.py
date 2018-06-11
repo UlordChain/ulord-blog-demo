@@ -15,7 +15,7 @@ from ulordapi.user import Junior
 
 log = logging.getLogger('webServer')
 
-junior = Junior(appkey="5d42b27e581c11e88b12f48e3889c8ab", secret="5d42b27f581c11e8bf63f48e3889c8ab")
+junior = Junior(appkey="8326648868ad11e8b894fa163e37b4c3", secret="8326648968ad11e8b894fa163e37b4c3")
 # blog_config = {
 #     'baseconfig':{
 #         'config_file':'E:\ulord\ulord-blog-demo\config'
