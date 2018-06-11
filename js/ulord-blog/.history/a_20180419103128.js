@@ -1,3 +1,0 @@
-function eat () {
-    console.log("")
-}

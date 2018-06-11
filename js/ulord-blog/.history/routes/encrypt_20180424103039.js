@@ -1,3 +1,0 @@
-exports.encrypt = function() {
-
-}
