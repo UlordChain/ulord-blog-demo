@@ -11,7 +11,6 @@ var api = require('./api.js');
 router.get('/', function(req, res, next) {
   res.redirect('/login');
 });
-console.log(api.getPublicKey());
 /*--------------------获取公匙---------------------*/
 router.post('/password', function(req, res, next) {
   var options = {
@@ -62,7 +61,7 @@ router.post('/login', function(req, res) {
     if (data.errcode == '0') {
       // req.session.user = data;   
       res.cookie('token', data.result.token, {
-        expires: new Date(Date.now() + 900000),
+        expires: new Date(Date.now() + 86400000),
         httpOnly: true
       });
       res.json({
@@ -109,7 +108,7 @@ router.post('/register', function(req, res) {
     console.log(data, error);
     if (data.errcode == '0') {
       res.cookie('token', data.result.token, {
-        expires: new Date(Date.now() + 900000),
+        expires: new Date(Date.now() + 86400000),
         httpOnly: true
       });
       res.json({
@@ -310,7 +309,6 @@ router.post('/release', urlencodedParser, function(req, res, next) {
 
 /*---------------------支付------------------------*/
 
-console.log('支付接口');
 router.post('/pay', urlencodedParser, function(req, res, next) {
   console.log(req.body);
   var options = {

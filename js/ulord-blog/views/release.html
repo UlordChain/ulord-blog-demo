@@ -93,6 +93,34 @@
       editor.create()
       $('#sub').on('click', function() {
         console.log('开始提交');
+        var tags = [];
+        $('.plus-tag a').each(function() {
+          tags.push($(this).text());
+        })
+        if($('#title').val() == ''){
+          layer.msg('请输入标题', {
+            time: 500
+          });
+          return false;
+        }
+        if(editor.txt.html() == '') {
+          layer.msg('请输入文章内容', {
+            time: 500
+          });
+          return false;
+        }
+        if(tags.length == 0) {
+          layer.msg('请输入标签', {
+            time: 500
+          })
+          return false;
+        }
+        if($('#intro').val() == ''){
+          layer.msg('请输入描述',{
+            time: 500
+          })
+          return false;
+        }
         var amount = $('#price').val();
         if (amount == ''){
           amount = 0;
@@ -100,10 +128,7 @@
         if ($('.ads-btn').hasClass('publish-btn-active')) {
           amount = -amount;
         }
-        var tags = [];
-        $('.plus-tag a').each(function() {
-          tags.push($(this).text());
-        })
+       
         $.ajax({
           url: '/release',
           type: 'POST',
