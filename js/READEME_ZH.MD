@@ -2,6 +2,10 @@
 ------
 一个基于nodejs中间层、express框架及paython后台搭建的ulord开放平台开发的博客系统demo。</br>
 
+开发指南
+------
+请跳转到[https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development](https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development),了解如何搭建博客.
+
 效果实现
 ------
 主体分为前台包括用户注册登录面板，文章内容列表以及分页；内容详情页有文章内容展示，文章支付查看，文章的发布页等。</br>
