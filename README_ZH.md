@@ -9,6 +9,9 @@
 
 
 ## 项目简介
+### 开发指南
+------
+请跳转到[https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development](https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development),了解如何搭建博客.
 ### 1. 使用目的：
 > 利用Ulord平台实现一个付费博客系统，支持付费阅读和看广告赚钱两种模式
 ### 2. 源码说明：
