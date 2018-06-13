@@ -11,7 +11,7 @@
 ## Project Profile
 ### Quick development guide
 ------
-Please refer to [https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development](https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development),and you will know how to build a block browser.
+Please refer to [https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development](https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development),and you will know how to build a blog.
 ### 1. Purpose of use:
 > Use Ulord platform to implement a paid blog system, which supports the two modes of earning money, including paying for reading and watching advertising.
 ### 2. Source code description:
