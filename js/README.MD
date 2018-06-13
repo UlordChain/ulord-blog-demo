@@ -9,7 +9,7 @@ The main part is divided into the front desk including the user registration log
 
 Quick development guide
 ------
-Please refer to [https://github.com/UlordChain/insight-ui-ulord/wiki](https://github.com/UlordChain/insight-ui-ulord/wiki),and you will know how to build a block browser.
+Please refer to [https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development](https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development),and you will know how to build a block browser.
 
 Operating environment:
 ------
