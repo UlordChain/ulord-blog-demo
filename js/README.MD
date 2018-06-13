@@ -7,6 +7,10 @@ Effect
 ------
 The main part is divided into the front desk including the user registration login panel, the article content list, and the pagination; the content details page including the article content display, the article payment view, and the article release page,etc.</br>
 
+Quick development guide
+------
+Please refer to [https://github.com/UlordChain/insight-ui-ulord/wiki](https://github.com/UlordChain/insight-ui-ulord/wiki),and you will know how to build a block browser.
+
 Operating environment:
 ------
 In node.js v8 version of Windows, express v4.13.1 is running properly.</br>
