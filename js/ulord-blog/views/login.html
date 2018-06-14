@@ -21,38 +21,21 @@
               </div>
             </div>
             <div class="form-group text-center">
-              <input type="button" class="btn btn-info" id="login0" value="登录" style="width: 100%;">
+              <input type="button" class="btn btn-info" id="login0" value="登录" style="width: 100%;" onclick="login()">
             </div>
             <div class="form-group">
-              <a href="/register" class="btn-a" id="register0">注册即送10UT币！</a>
+              <a href="/blog/register" class="btn-a" id="register0">注册即送10UT币！</a>
             </div>
           </div>
         </div>
       </fieldset>
     </form>
     <script>
-      $(document).keydown(function(event) {
-        if (event.keyCode == 13) {
-          $('#login0').click();
-        }
-      });
-      $('#login0').on('click', function() {
-        if ($('input[name="username"]').val() == '') {
-          layer.msg('请输入账号', {
-            time: 1000
-          })
-          return false;
-        }
-        if ($('input[name="password"]').val() == '') {
-          layer.msg('请输入密码', {
-            time: 1000
-          })
-          return false;
-        }
       var loading;
+      function login() {
         $.ajax({
           async: false,
-          url: '/password',
+          url: '/blog/password',
           type: 'POST',
           dataType: "json",
           contentType: 'application/json',
@@ -81,14 +64,14 @@
              console.log(formParam);
               $.ajax({
                 async: false,
-                url: '/login',
+                url: '/blog/login',
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
                 data: JSON.stringify(formParam),
                 success: function(res) {
                   if (res.code == 0) {
-                    window.location.href = '/home';
+                    window.location.href = '/blog/home';
                   } 
                   else if (res.code == 60002) {
                     layer.close(loading);
@@ -112,7 +95,32 @@
             }
           }
         })
-    })
+      }
+		$(document).keydown(function (event){
+			if(event.keyCode == 13) {
+			login();
+		}
+		});
+      // console.log($.ajax);
+      // (function(){
+      //   var ajax = $.ajax;
+      //   $.ajax = function(opt) {
+      //     var success = opt.success || function(){};
+      //     opt.success = function(data) {
+      //       if(data.code == 60002) {
+      //         layer.msg('用户不存在', {
+      //           time: 1000
+      //         })
+      //       } else {
+      //         console.log(this,arguments,data);
+      //         success.apply(this,arguments);
+      //       }
+      //     }
+      //     return ajax.call($, opt);
+      //   }
+      // })()
+      // console.log($.ajax);
     </script>
   </body>
+
   </html>

@@ -21,8 +21,8 @@
     <div class="panel panel-warning">
       <div class="panel-heading blog-title">
         <h3>Ulord博客创作中心</h3>
-        <a class="pull-right" href="/info">个人中心</a>
-        <a class="pull-right" href="/home">返回主页</a>
+        <a class="pull-right" href="/blog/info">个人中心</a>
+        <a class="pull-right" href="/blog/home">返回主页</a>
       </div>
       <div class="panel-body">
         <div>
@@ -38,7 +38,7 @@
         <div class="demo" class="col-md-12 ">
           <div class="plus-tag tagbtn clearfix" id="myTags"></div>
           <div class="plus-tag-add">
-            <form id="" action="" class="login">
+            <form class="login">
               <ul class="Form FancyForm">
                 <li>
                   <span class="label" style="color: #000">我的标签</span>
@@ -93,34 +93,6 @@
       editor.create()
       $('#sub').on('click', function() {
         console.log('开始提交');
-        var tags = [];
-        $('.plus-tag a').each(function() {
-          tags.push($(this).text());
-        })
-        if($('#title').val() == ''){
-          layer.msg('请输入标题', {
-            time: 500
-          });
-          return false;
-        }
-        if(editor.txt.html() == '') {
-          layer.msg('请输入文章内容', {
-            time: 500
-          });
-          return false;
-        }
-        if(tags.length == 0) {
-          layer.msg('请输入标签', {
-            time: 500
-          })
-          return false;
-        }
-        if($('#intro').val() == ''){
-          layer.msg('请输入描述',{
-            time: 500
-          })
-          return false;
-        }
         var amount = $('#price').val();
         if (amount == ''){
           amount = 0;
@@ -128,9 +100,12 @@
         if ($('.ads-btn').hasClass('publish-btn-active')) {
           amount = -amount;
         }
-       
+        var tags = [];
+        $('.plus-tag a').each(function() {
+          tags.push($(this).text());
+        })
         $.ajax({
-          url: '/release',
+          url: '/blog/release',
           type: 'POST',
           contentType: "application/json",
           data: JSON.stringify({
@@ -146,7 +121,7 @@
             layer.msg('发布成功', {
               time: 500
             }, function() {
-              window.location.href = '/home';
+              window.location.href = '/blog/home';
             })
           } else if (res.code == -2) {
             layer.close(index);

@@ -9,10 +9,11 @@ var api = require('./api.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.redirect('/login');
+  res.redirect('/blog/login');
 });
+console.log(api.getPublicKey());
 /*--------------------获取公匙---------------------*/
-router.post('/password', function(req, res, next) {
+router.post('/blog/password', function(req, res, next) {
   var options = {
     url: api.getPublicKey(),
     method: 'GET',
@@ -34,13 +35,13 @@ router.post('/password', function(req, res, next) {
 
 /*---------------------登录------------------------*/
 
-router.get('/login', function(req, res, next) {
+router.get('/blog/login', function(req, res, next) {
   res.render('login', {
     code: ''
   });
 });
 
-router.post('/login', function(req, res) {
+router.post('/blog/login', function(req, res) {
   var username = req.body.username;
   var userpass = req.body.password;
   var options = {
@@ -61,7 +62,7 @@ router.post('/login', function(req, res) {
     if (data.errcode == '0') {
       // req.session.user = data;   
       res.cookie('token', data.result.token, {
-        expires: new Date(Date.now() + 86400000),
+        expires: new Date(Date.now() + 900000),
         httpOnly: true
       });
       res.json({
@@ -78,13 +79,13 @@ router.post('/login', function(req, res) {
 
 /*---------------------注册------------------------*/
 
-router.get('/register', function(req, res, next) {
+router.get('/blog/register', function(req, res, next) {
   res.render('register', {
     code: ''
   });
 });
 
-router.post('/register', function(req, res) {
+router.post('/blog/register', function(req, res) {
   var username = req.body.username;
   var userpass = req.body.password;
   var email = req.body.email;
@@ -108,7 +109,7 @@ router.post('/register', function(req, res) {
     console.log(data, error);
     if (data.errcode == '0') {
       res.cookie('token', data.result.token, {
-        expires: new Date(Date.now() + 86400000),
+        expires: new Date(Date.now() + 900000),
         httpOnly: true
       });
       res.json({
@@ -125,7 +126,7 @@ router.post('/register', function(req, res) {
 
 /*---------------------活动------------------------*/
 
-router.post('/activity', function(req, res2, next) {
+router.post('/blog/activity', function(req, res2, next) {
   console.log("活动请求开始")
   var options = {
     url: api.activity(),
@@ -153,7 +154,7 @@ var jsonParse = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({
   extended: false
 })
-router.get('/home', function(req, res, next) {
+router.get('/blog/home', function(req, res, next) {
   console.log("ajax get列表请求开始")
   console.log(url);
   console.log('token', req.cookies.token);
@@ -271,10 +272,10 @@ router.get('/home', function(req, res, next) {
 
 /*--------------------发布------------------------*/
 
-router.get('/release', function(req, res, next) {
+router.get('/blog/release', function(req, res, next) {
   res.render('release');
 });
-router.post('/release', urlencodedParser, function(req, res, next) {
+router.post('/blog/release', urlencodedParser, function(req, res, next) {
   console.log(req.body);
   var options = {
     url: api.publish(),
@@ -309,7 +310,8 @@ router.post('/release', urlencodedParser, function(req, res, next) {
 
 /*---------------------支付------------------------*/
 
-router.post('/pay', urlencodedParser, function(req, res, next) {
+console.log('支付接口');
+router.post('/blog/pay', urlencodedParser, function(req, res, next) {
   console.log(req.body);
   var options = {
     url: api.pay(),
@@ -343,7 +345,7 @@ router.post('/pay', urlencodedParser, function(req, res, next) {
 
 /*---------------------广告------------------------*/
 
-router.post('/ads', urlencodedParser, function(req, res, next) {
+router.post('/blog/ads', urlencodedParser, function(req, res, next) {
   console.log(req.body);
   var options = {
     url: api.payAds(),
@@ -381,22 +383,22 @@ router.post('/ads', urlencodedParser, function(req, res, next) {
 
 /*---------------------文章详情------------------------*/
 
-router.get('/details', function(req, res, next) {
+router.get('/blog/details', function(req, res, next) {
   // var url = URL.parse(req.url).query;
   // var idValue = qs.parse(url)['id']
   res.render('details');
 });
-router.post('/details', urlencodedParser, function(req, res, next) {
+router.post('/blog/details', urlencodedParser, function(req, res, next) {
   console.log(req.body.data)
   console.log(Utf8ArrayToStr(req.body.data));
-  res.json('/details', {
+  res.json('details', {
     data: Utf8ArrayToStr(req.body.data)
   })
 })
 
 /*---------------------修改个人信息----------------*/
 
-router.post('/modify', function(req, res, next) {
+router.post('/blog/modify', function(req, res, next) {
   var username = req.body.username;
   var password = req.body.password;
   var email = req.body.email;
@@ -431,7 +433,7 @@ router.post('/modify', function(req, res, next) {
 
 /*---------------------广告------------------------*/
 
-router.get('/info', function(req, res, neex) {
+router.get('/blog/info', function(req, res, neex) {
   var options = {
     url: api.info(),
     method: 'GET',
@@ -453,7 +455,7 @@ router.get('/info', function(req, res, neex) {
     })
   })
     
-router.get('/balance', function(req, res, next) {
+router.get('/blog/balance', function(req, res, next) {
   var options = {
     url: api.balance(),
     method: 'get',
@@ -474,7 +476,7 @@ router.get('/balance', function(req, res, next) {
   })
 })
 
-router.post('/billings', function(req, res, next) {
+router.post('/blog/billings', function(req, res, next) {
   var options = {
     url: api.billings(),
     method: 'post',
@@ -499,7 +501,7 @@ router.post('/billings', function(req, res, next) {
   })
 })
 
-router.post('/outgo', function(req, res, next) {
+router.post('/blog/outgo', function(req, res, next) {
   var options = {
     url: api.customer(),
     method: 'post',
@@ -525,7 +527,7 @@ router.post('/outgo', function(req, res, next) {
   })
 })
 
-router.post('/income', function(req, res, next) {
+router.post('/blog/income', function(req, res, next) {
   var options = {
     url: api.author(),
     method: 'post',
@@ -551,7 +553,7 @@ router.post('/income', function(req, res, next) {
   })
 })
 
-router.post('/published', function(req, res, next) {
+router.post('/blog/published', function(req, res, next) {
   var options = {
     url: api.published(),
     method: 'post',
@@ -577,7 +579,7 @@ router.post('/published', function(req, res, next) {
   })
 })
 
-router.post('/delete', function(req, res, next) {
+router.post('/blog/delete', function(req, res, next) {
   var options = {
     url: api.delete(),
     method: 'post',
@@ -602,7 +604,7 @@ router.post('/delete', function(req, res, next) {
   })
 })
 
-router.post('/getDetails', function(req, res, next) {
+router.post('/blog/getDetails', function(req, res, next) {
   console.log(req.body.id);
   var options = {
     url: api.getDetails(),
@@ -627,7 +629,7 @@ router.post('/getDetails', function(req, res, next) {
   })
 })
 
-router.post('/isbought', function(req, res, next) {
+router.post('/blog/isbought', function(req, res, next) {
 var options = {
   url: api.isbought(),
   method: 'POST',
@@ -653,7 +655,7 @@ request(options, function(error, response, data) {
 })
 })
 
-router.post('/update', urlencodedParser, function(req, res, next) {
+router.post('/blog/update', urlencodedParser, function(req, res, next) {
   console.log(req.body);
   var options = {
     url: api.update(),
@@ -689,7 +691,7 @@ router.post('/update', urlencodedParser, function(req, res, next) {
   })
 })
 
-router.get('/update', function(req, res, next) {
+router.get('/blog/update', function(req, res, next) {
   res.render('update',{
 
   });

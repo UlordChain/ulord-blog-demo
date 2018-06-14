@@ -2,7 +2,7 @@
 
   <body>
     <div class="container info">
-      <h2>Ulord博客个人中心<a class="pull-right" style="font-size: 20px; color: rgb(255, 152, 0); line-height: 45px;" href="/home">返回主页</a></h2>
+      <h2>Ulord博客个人中心<a class="pull-right" style="font-size: 20px; color: rgb(255, 152, 0); line-height: 45px;" href="/blog/home">返回主页</a></h2>
       <ul id="myTab" class="nav nav-tabs info-nav">
         <li class="active"><a href="#account" data-toggle="tab">我的账户</a></li>
         <li><a href="#home" data-toggle="tab">我的资料</a></li>
@@ -27,9 +27,9 @@
               </br>
               <span>您总共查看了&nbsp;<span class="consume-in"></span>&nbsp;篇广告</span><span>,收入&nbsp;<span class="consume-in-sum"></span>&nbsp;UT</span>
               </br>
-              <span>您总共发布了&nbsp;<span class="publish-out"></span>&nbsp;篇广告</span><span>,花费了&nbsp;<span class="publish-out-sum"></span>&nbsp;UT</span>
+              <span>您发布的广告被阅读了&nbsp;<span class="publish-out"></span>&nbsp;次</span><span>,花费了&nbsp;<span class="publish-out-sum"></span>&nbsp;UT</span>
               </br>
-              <span>您总共发布了&nbsp;<span class="publish-in"></span>&nbsp;篇文章</span><span>,收入了&nbsp;<span class="publish-in-sum"></span>&nbsp;UT</span>
+              <span>您发布的文章被阅读了&nbsp;<span class="publish-in"></span>&nbsp;次</span><span>,收入了&nbsp;<span class="publish-in-sum"></span>&nbsp;UT</span>
             </div>
           </div>
           <ul id="mTab" class="nav nav-tabs">
@@ -399,7 +399,7 @@
           $('#searchDate').val(outgoStartDate + ' - ' + outgoEndDate);
           console.log(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'))
           $.ajax({
-            url: '/billings',
+            url: '/blog/billings',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
@@ -422,7 +422,7 @@
           })
 
           $.ajax({
-            url: '/outgo',
+            url: '/blog/outgo',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
@@ -451,7 +451,7 @@
             }
           })
           $.ajax({
-            url: '/income',
+            url: '/blog/income',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
@@ -482,7 +482,7 @@
             //获取当前页码
             var current = api.getCurrent();
             $.ajax({
-              url: '/income',
+              url: '/blog/income',
               type: 'post',
               dataType: 'json',
               contentType: 'application/json',
@@ -507,7 +507,7 @@
 
         //获取账单总额
         $.ajax({
-          url: '/billings',
+          url: '/blog/billings',
           type: 'post',
           dataType: 'json',
           contentType: 'application/json',
@@ -531,7 +531,7 @@
 
         //获取支出账单
         $.ajax({
-          url: '/outgo',
+          url: '/blog/outgo',
           type: 'post',
           dataType: 'json',
           contentType: 'application/json',
@@ -564,7 +564,7 @@
           //获取当前页码
           var current = api.getCurrent();
           $.ajax({
-            url: '/outgo',
+            url: '/blog/outgo',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
@@ -588,7 +588,7 @@
 
         //获取余额
         $.ajax({
-          url: '/balance',
+          url: '/blog/balance',
           type: 'get',
           dataType: 'json',
           contentType: 'application/json',
@@ -606,7 +606,7 @@
             console.log(activeTab)
             if (activeTab == '收入账单') {
               $.ajax({
-                url: '/income',
+                url: '/blog/income',
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -637,7 +637,7 @@
               })
             } else if (activeTab == '我的文章') {
               $.ajax({
-                url: '/published',
+                url: '/blog/published',
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -665,7 +665,7 @@
               //获取当前页码
               var current = api.getCurrent();
               $.ajax({
-                url: '/income',
+                url: '/blog/income',
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -690,7 +690,7 @@
               //获取当前页码
               var current = api.getCurrent();
               $.ajax({
-                url: '/published',
+                url: '/blog/published',
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -717,7 +717,7 @@
             formType: 1,
           }, function(pass, index) {
             $.ajax({
-              url: '/password',
+              url: '/blog/password',
               type: 'POST',
               dataType: "json",
               contentType: 'application/json',
@@ -726,7 +726,7 @@
                 encrypt.setPublicKey(res.publicKey);
                 pass = encrypt.encrypt(pass)
                 $.ajax({
-                  url: '/delete',
+                  url: '/blog/delete',
                   type: 'POST',
                   contentType: "application/json",
                   data: JSON.stringify({
@@ -794,7 +794,7 @@
 
             $.ajax({
               async: false,
-              url: '/password',
+              url: '/blog/password',
               type: 'POST',
               dataType: "json",
               contentType: 'application/json',
@@ -813,7 +813,7 @@
                   oldPass = encrypt.encrypt(pass)
                 }
                 $.ajax({
-                  url: '/modify',
+                  url: '/blog/modify',
                   type: 'POST',
                   contentType: "application/json",
                   data: JSON.stringify({
@@ -848,7 +848,6 @@
           position: relative;
           float: left;
           padding: 6px 12px;
-          margin-left: -1px;
           line-height: 1.42857143;
           color: #337ab7;
           text-decoration: none;

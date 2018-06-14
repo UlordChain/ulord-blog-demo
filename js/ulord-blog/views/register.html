@@ -2,11 +2,11 @@
 
   <body>
 
-    <form class="register-form" role="form" method="post" action="/register" onsubmit="return false">
+    <form class="register-form" role="form" method="post" action="/blog/register" onsubmit="return false">
       <fieldset>
         <div class="panel panel-default">
           <div class="page-header">
-            <h1 class="text-center">Ulord博客系统</h1>
+<h1 class="text-center">Ulord博客系统</h1>
           </div>
           <div class="panel-body m15">
             <div class="form-group">
@@ -45,8 +45,8 @@
               <input type="button" class="btn btn-info btn-a" id="register1" value="注册" style="width: 100%" onclick="register()">
             </div>
             <div class="form-group text-center">
-              <a href="/login" class="" id="login1">
-                <span style="color: #000; margin-right: 4px;">已有账号</span>登录</a>
+              <a href="/blog/login" class="" id="login1">
+                            <span style="color: #000; margin-right: 4px;">已有账号</span>登录</a>
             </div>
           </div>
         </div>
@@ -62,22 +62,11 @@
         });
         return obj;
       };
-      $('#register1').on('click', function() {
-        if ($('#username').val() == '') {
-          layer.msg('请输入用户名', {
-            time: 1000
-          })
-          return false;
-        }
-        if ($('#username').val() == '') {
-          layer.msg('请输入密码', {
-            time: 1000
-          })
-        }
       var loading; 
+      function register() {
         $.ajax({
           async: false,
-          url: '/password',
+          url: '/blog/password',
           type: 'POST',
           dataType: 'json',
           contentType: 'application/json',
@@ -104,7 +93,7 @@
             var formParam = $('.register-form').serializeObject()
             $.ajax({
               async: false,
-              url: '/register',
+              url: '/blog/register',
               type: 'POST',
               dataType: 'json',
               contentType: 'application/json',
@@ -113,12 +102,12 @@
                 if (res.code == 0) {
                   $.ajax({
                     async: false,
-                    url: '/activity',
+                    url: '/blog/activity',
                     type: 'POST',
                     dataType: 'json',
                     success: function(res2) {
                       if (res2.code == 0) {
-                        window.location.href = '/home'
+                        window.location.href = '/blog/home'
                       }
                     }
                   })
@@ -168,8 +157,12 @@
           }
           }
         })
-      })
-    
+      }
+		$(document).keydown(function(event){
+		if(event.keyCode == 13) {
+		register();
+		}
+		});
     </script>
   </body>
   </html>
