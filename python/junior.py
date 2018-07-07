@@ -90,12 +90,22 @@ def regist():
     if username is None or password is None:
         # missing arguments
         return jsonify(return_result(60100))
-    args = junior.decrypt([username, password, cellphone, email])
-    if args:
-        result = junior.user_regist(username=args[0],password=args[1],cellphone=args[2],email=args[3])
-        return jsonify(result)
-    else:
-        return jsonify(return_result(60100))
+    username = junior.decrypt(username)
+    password = junior.decrypt(password)
+    cellphone = junior.decrypt(cellphone)
+    email = junior.decrypt(email)
+    result = junior.user_regist(username, password,cellphone,email)
+    return jsonify(result)
+    # args = junior.decrypt([username, password, cellphone, email])
+    # if args:
+    #     username = args[0]
+    #     password = args[1]
+    #     cellphone = args[2]
+    #     email = args[3]
+    #     result = junior.user_regist(username, password,cellphone,email)
+    #     return jsonify(result)
+    # else:
+    #     return jsonify(return_result(60100))
 
 @app.route('/user/activity', methods=['GET'])
 def activity():
