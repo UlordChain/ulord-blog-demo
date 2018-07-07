@@ -1,4 +1,5 @@
-﻿# Ulord博客演示系统 [英文版](https://github.com/UlordChain/ulord-blog-demo/blob/master/README.md)
+﻿# Ulord博客演示系统 
+ [English Version](https://github.com/UlordChain/ulord-blog-demo/blob/master/README.md)
 ### 通过提供开发组件加速企业用户快速切入内容分发的区块链领域。
 #### Ulord平台提供三位一体的服务方案，满足企业用户开发和部署内容区块链应用。
 > * **Ulord平台：** 提供Ulord公链，完成交易确认，内容元信息存储，内容全文加密存储，内容元信息检索，内容版权确认，内容智能检索和推荐。<br>
@@ -9,6 +10,9 @@
 
 
 ## 项目简介
+### 开发指南
+------
+请跳转到[https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development](https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development),了解如何搭建博客.
 ### 1. 使用目的：
 > 利用Ulord平台实现一个付费博客系统，支持付费阅读和看广告赚钱两种模式
 ### 2. 源码说明：

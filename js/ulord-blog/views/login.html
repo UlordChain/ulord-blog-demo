@@ -24,7 +24,7 @@
               <input type="button" class="btn btn-info" id="login0" value="登录" style="width: 100%;" onclick="login()">
             </div>
             <div class="form-group">
-              <a href="/register" class="btn-a" id="register0">注册即送10UT币！</a>
+              <a href="/blog/register" class="btn-a" id="register0">注册即送10UT币！</a>
             </div>
           </div>
         </div>
@@ -35,7 +35,7 @@
       function login() {
         $.ajax({
           async: false,
-          url: '/password',
+          url: '/blog/password',
           type: 'POST',
           dataType: "json",
           contentType: 'application/json',
@@ -64,14 +64,14 @@
              console.log(formParam);
               $.ajax({
                 async: false,
-                url: '/login',
+                url: '/blog/login',
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
                 data: JSON.stringify(formParam),
                 success: function(res) {
                   if (res.code == 0) {
-                    window.location.href = '/home';
+                    window.location.href = '/blog/home';
                   } 
                   else if (res.code == 60002) {
                     layer.close(loading);
@@ -96,6 +96,11 @@
           }
         })
       }
+		$(document).keydown(function (event){
+			if(event.keyCode == 13) {
+			login();
+		}
+		});
       // console.log($.ajax);
       // (function(){
       //   var ajax = $.ajax;

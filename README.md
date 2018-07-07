@@ -1,4 +1,5 @@
-﻿# Ulord Blog Demonstration System [中文版](https://github.com/UlordChain/ulord-blog-demo/blob/master/README_ZH.md)
+﻿# Ulord Blog Demonstration System 
+ [中文版](https://github.com/UlordChain/ulord-blog-demo/blob/master/README_ZH.md)
 ### By providing development components, it makes enterprise users quickly switch into the blockchain domain of content distribution.
 #### Ulord platform provides a trinity of service solutions for enterprise users to develop and deploy content blockchain applications.
 > * **Ulord Platform:** it provides Ulord public blockchain, completes transaction confirmation, stores content metadata, encrypts full-text content, retrieves content meta-information, confirms content copyright, and intelligently searches and recommends content.<br>
@@ -9,6 +10,9 @@
 
 
 ## Project Profile
+### Quick development guide
+------
+You can come [here](https://github.com/UlordChain/ulord-blog-demo/wiki/Blog-System-Development) to get how to build a blog.
 ### 1. Purpose of use:
 > Use Ulord platform to implement a paid blog system, which supports the two modes of earning money, including paying for reading and watching advertising.
 ### 2. Source code description:

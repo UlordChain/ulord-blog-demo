@@ -2,7 +2,7 @@
 
   <body>
 
-    <form class="register-form" role="form" method="post" action="/register" onsubmit="return false">
+    <form class="register-form" role="form" method="post" action="/blog/register" onsubmit="return false">
       <fieldset>
         <div class="panel panel-default">
           <div class="page-header">
@@ -45,7 +45,7 @@
               <input type="button" class="btn btn-info btn-a" id="register1" value="注册" style="width: 100%" onclick="register()">
             </div>
             <div class="form-group text-center">
-              <a href="/login" class="" id="login1">
+              <a href="/blog/login" class="" id="login1">
                             <span style="color: #000; margin-right: 4px;">已有账号</span>登录</a>
             </div>
           </div>
@@ -66,7 +66,7 @@
       function register() {
         $.ajax({
           async: false,
-          url: '/password',
+          url: '/blog/password',
           type: 'POST',
           dataType: 'json',
           contentType: 'application/json',
@@ -93,7 +93,7 @@
             var formParam = $('.register-form').serializeObject()
             $.ajax({
               async: false,
-              url: '/register',
+              url: '/blog/register',
               type: 'POST',
               dataType: 'json',
               contentType: 'application/json',
@@ -102,12 +102,12 @@
                 if (res.code == 0) {
                   $.ajax({
                     async: false,
-                    url: '/activity',
+                    url: '/blog/activity',
                     type: 'POST',
                     dataType: 'json',
                     success: function(res2) {
                       if (res2.code == 0) {
-                        window.location.href = '/home'
+                        window.location.href = '/blog/home'
                       }
                     }
                   })
@@ -158,6 +158,11 @@
           }
         })
       }
+		$(document).keydown(function(event){
+		if(event.keyCode == 13) {
+		register();
+		}
+		});
     </script>
   </body>
   </html>

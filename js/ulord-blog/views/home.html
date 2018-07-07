@@ -22,8 +22,8 @@
     <div class="panel panel-warning">
       <div class="panel-heading">
         <h3>博客首页</h3>
-        <a class="pull-right" href="/info">个人中心</a>
-        <a href="/release" class="pull-right">发布</a>
+        <a class="pull-right" href="/blog/info">个人中心</a>
+        <a href="/blog/release" class="pull-right">发布</a>
       </div>
       <div class="panel-body">
         <% if (!error) { %>
@@ -68,27 +68,27 @@
                   <nav>
                     <ul class="pagination">
                       <li>
-                        <a href="home?<%=url%>&page=<%=page!=1?(parseInt(page)-1):page;%>" aria-label="Previous">
+                        <a href="/blog/home?<%=url%>&page=<%=page!=1?(parseInt(page)-1):page;%>" aria-label="Previous">
                           <span aria-hidden="true">&laquo;</span>
                         </a>
                       </li>
                       <%for(var i=1;i<=total;i++){%>
                         <%if(i==page){%>
                           <li class="active">
-                            <a href="home?<%=url%>&page=<%=i%>">
+                            <a href="/blog/home?<%=url%>&page=<%=i%>">
                               <%=i%>
                             </a>
                           </li>
                           <% } else { %>
                             <li>
-                              <a href="home?<%=url%>&page=<%=i%>">
+                              <a href="/blog/home?<%=url%>&page=<%=i%>">
                                 <%=i%>
                               </a>
                             </li>
                             <% } %>
                               <% } %>
                                 <li>
-                                  <a href="home?<%=url%>&page=<%=total!=page?(parseInt(page)+1):page;%>" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                                  <a href="/blog/home?<%=url%>&page=<%=total!=page?(parseInt(page)+1):page;%>" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
                                 </li>
                     </ul>
                   </nav>
@@ -166,14 +166,14 @@
               window.sessionStorage.author = author;
               window.sessionStorage.content = Utf8ArrayToStr(array);
               // window.location.href = "/details?id="+id;
-              window.location.href = "/details";
+              window.location.href = "/blog/details";
               console.log('很重要', Utf8ArrayToStr(array));
             }
           })
         } else {
           if (amount <= 0) {
             $.ajax({
-              url: '/ads',
+              url: '/blog/ads',
               type: 'POST',
               contentType: "application/json",
               data: JSON.stringify({
@@ -199,7 +199,7 @@
                     window.sessionStorage.content =
                       Utf8ArrayToStr(array);
                     window.location.href =
-                      '/details'
+                      '/blog/details'
                     console.log('很重要',
                       Utf8ArrayToStr(array));
                   }
@@ -228,7 +228,7 @@
                 formType: 1,
               }, function(pass, index) {
                 $.ajax({
-                  url: '/password',
+                  url: '/blog/password',
                   type: 'POST',
                   dataType: "json",
                   contentType: 'application/json'
@@ -240,7 +240,7 @@
                   pass = encrypt.encrypt(pass)
                   console.log("加密后", pass);
                   $.ajax({
-                    url: '/pay',
+                    url: '/blog/pay',
                     type: 'POST',
                     contentType: "application/json",
                     data: JSON.stringify({
@@ -271,7 +271,7 @@
                           window.sessionStorage.content =
                             Utf8ArrayToStr(array);
                           window.location.href =
-                            '/details'
+                            '/blog/details'
                           console.log('很重要',
                             Utf8ArrayToStr(
                               array));
